@@ -1,11 +1,9 @@
-﻿using backend.model.enums;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.model
 {
-    [Table("Users")] // Maps the class to a specific database table name
+    [Table("Users")]
     public class User
     {
         [Key]
@@ -27,9 +25,18 @@ namespace backend.model
         [Url(ErrorMessage = "Invalid image URL format.")]
         [StringLength(500, ErrorMessage = "Image URL is too long.")]
         public string? ImageUrl { get; set; }
+        
+        [Required(ErrorMessage = "User role is required.")]
+        [EnumDataType(typeof(Role), ErrorMessage = "Invalid Role value provided.")]
+        public Role Role { get; set; } = Role.Freelancer;
 
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public Freelancer? Freelancer { get; set; }
+        public Client? Client { get; set; }
     }
 }

@@ -1,6 +1,4 @@
-﻿using backend.model.enums;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace backend.model {
     public class Job {
