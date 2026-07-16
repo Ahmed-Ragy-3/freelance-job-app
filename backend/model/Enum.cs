@@ -1,13 +1,10 @@
-﻿namespace backend.model
-{
-    public enum Role
-    {
+﻿namespace backend.model {
+    public enum Role {
         Admin,
         Freelancer,
         Client
     }
-    public enum JobStatus
-    {
+    public enum JobStatus {
         Pending,
         Approved,
         Rejected,

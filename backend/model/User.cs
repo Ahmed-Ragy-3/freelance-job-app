@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model
-{
+namespace backend.model {
     [Table("Users")]
-    public class User
-    {
+    public class User {
         [Key]
         public int Id { get; set; }
 
@@ -25,7 +23,7 @@ namespace backend.model
         [Url(ErrorMessage = "Invalid image URL format.")]
         [StringLength(500, ErrorMessage = "Image URL is too long.")]
         public string? ImageUrl { get; set; }
-        
+
         [Required(ErrorMessage = "User role is required.")]
         [EnumDataType(typeof(Role), ErrorMessage = "Invalid Role value provided.")]
         public Role Role { get; set; } = Role.Freelancer;

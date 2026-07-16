@@ -1,9 +1,11 @@
 using backend;
+using backend.Options;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<AttachmentOptions>(builder.Configuration.GetSection("Attachment"));
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(

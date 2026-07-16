@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model
-{
+namespace backend.model {
     [Table("Freelancers")]
-    public class Freelancer
-    {
+    public class Freelancer {
         [Key]
         [ForeignKey("User")]
         public int UserId { get; set; }

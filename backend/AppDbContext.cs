@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend {
     public class AppDbContext : DbContext {
-        
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
 
-        } 
+        }
 
         public DbSet<Job> Jobs { get; set; }
         public DbSet<Attachment> attachments { get; set; }
@@ -21,15 +21,13 @@ namespace backend {
             base.OnModelCreating(modelBuilder);
 
 
-            modelBuilder.Entity<User>(entity =>
-            {
+            modelBuilder.Entity<User>(entity => {
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Role).HasConversion<string>();
                 entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
 
-            modelBuilder.Entity<Notification>(entity =>
-            {
+            modelBuilder.Entity<Notification>(entity => {
                 entity.Property(n => n.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
 
