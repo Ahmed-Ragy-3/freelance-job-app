@@ -82,6 +82,11 @@ namespace backend {
                 entity.Property(j => j.Deadline).HasColumnType("date");
                 entity.Property(j => j.PostedAt).HasDefaultValueSql("GETUTCDATE()");
             });
+
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes()
+                                               .SelectMany(e => e.GetForeignKeys())) {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
     }
 }
