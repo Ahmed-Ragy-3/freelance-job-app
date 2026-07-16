@@ -51,7 +51,7 @@ namespace backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("attachments");
+                    b.ToTable("attachments", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Categories", b =>
@@ -69,7 +69,7 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("categories");
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Client", b =>
@@ -92,7 +92,7 @@ namespace backend.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Freelancer", b =>
@@ -111,7 +111,7 @@ namespace backend.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Freelancers");
+                    b.ToTable("Freelancers", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Job", b =>
@@ -154,7 +154,7 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Notification", b =>
@@ -185,7 +185,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.User", b =>
@@ -229,7 +229,7 @@ namespace backend.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Attachment", b =>
