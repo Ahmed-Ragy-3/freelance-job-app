@@ -48,7 +48,6 @@ namespace backend.model {
 
         public ICollection<JobCategory> JobCategories { get; set; } = new List<JobCategory>();
         
-        
-        //public ICollection<Skill> skills { get; set; } = new List<Skill>();
+        public ICollection<Skill> skills { get; set; } = new List<Skill>();
     }
 }
