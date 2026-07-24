@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend;
 
@@ -11,9 +12,11 @@ using backend;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260724041012_RemoveJobIdFromTags")]
+    partial class RemoveJobIdFromTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,12 @@ namespace backend.Migrations
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("JobId1")
+                        .HasColumnType("int");
+
                     b.HasKey("JobId", "TagId");
+
+                    b.HasIndex("JobId1");
 
                     b.HasIndex("TagId");
 
@@ -458,13 +466,18 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Model.JobTag", b =>
                 {
                     b.HasOne("backend.model.Job", "Job")
-                        .WithMany("Tags")
+                        .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("backend.model.Job", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("JobId1")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("backend.Model.Tag", "Tag")
-                        .WithMany("JobTags")
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -640,11 +653,6 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Freelancer");
-                });
-
-            modelBuilder.Entity("backend.Model.Tag", b =>
-                {
-                    b.Navigation("JobTags");
                 });
 
             modelBuilder.Entity("backend.model.Category", b =>

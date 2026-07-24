@@ -19,7 +19,5 @@ namespace backend.model {
         [StringLength(500, ErrorMessage = "Logo URL is too long.")]
         public string? Logo { get; set; }
         public User User { get; set; } = null!;
-
-        public ICollection<Job> Jobs { get; set; } = new List<Job>();
     }
 }

@@ -1,4 +1,5 @@
 using backend;
+using backend.Data;
 using backend.FileUpload;
 using backend.Options;
 using backend.Services;
@@ -18,12 +19,25 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IFileUploadService, CloudinaryService>();
+builder.Services.AddScoped<DatabaseSeeder>();
 
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
 ));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) {
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+
+    if (app.Environment.IsDevelopment()) {
+        dbContext.Database.EnsureDeleted();
+    }
+
+    dbContext.Database.EnsureCreated();
+    await seeder.SeedAsync();
+}
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();

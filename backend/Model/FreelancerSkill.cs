@@ -8,7 +8,7 @@ namespace backend.model
         public int SkillId { get; set; }
         public int ExperienceLevel { get; set; }
 
-        public Freelancer Freelancer { get; set; }
-        public Skill Skill { get; set; }
+        public Freelancer Freelancer { get; set; } = null!;
+        public Skill Skill { get; set; } = null!;
     }
 }

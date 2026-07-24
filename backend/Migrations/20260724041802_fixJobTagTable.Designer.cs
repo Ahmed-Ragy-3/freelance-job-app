@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend;
 
@@ -11,9 +12,11 @@ using backend;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260724041802_fixJobTagTable")]
+    partial class fixJobTagTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,9 +48,19 @@ namespace backend.Migrations
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("JobId1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TagId1")
+                        .HasColumnType("int");
+
                     b.HasKey("JobId", "TagId");
 
+                    b.HasIndex("JobId1");
+
                     b.HasIndex("TagId");
+
+                    b.HasIndex("TagId1");
 
                     b.ToTable("JobTags");
                 });
@@ -458,16 +471,26 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Model.JobTag", b =>
                 {
                     b.HasOne("backend.model.Job", "Job")
-                        .WithMany("Tags")
+                        .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("backend.model.Job", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("JobId1")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("backend.Model.Tag", "Tag")
-                        .WithMany("JobTags")
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("backend.Model.Tag", null)
+                        .WithMany("JobTags")
+                        .HasForeignKey("TagId1")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Job");
 

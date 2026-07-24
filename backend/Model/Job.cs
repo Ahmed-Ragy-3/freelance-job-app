@@ -38,16 +38,15 @@ namespace backend.model {
         [ForeignKey(nameof(Client))]
         public int ClientId { get; set; }
 
+        [ForeignKey(nameof(ClientId))]
         public User Client { get; set; } = null!;
 
         public Review? Review { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
-        
+        public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public ICollection<JobTag> Tags { get; set; } = new List<JobTag>();
-
         public ICollection<JobCategory> Categories { get; set; } = new List<JobCategory>();
-        
         public ICollection<JobSkill> Skills { get; set; } = new List<JobSkill>();
     }
 }

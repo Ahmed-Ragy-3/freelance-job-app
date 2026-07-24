@@ -23,6 +23,7 @@ namespace backend.model {
         public User User { get; set; } = null!;
 
         public ICollection<Application> Applications { get; set; } = new List<Application>();
+        public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public ICollection<FreelancerSkill> FreelancerSkills { get; set; } = new List<FreelancerSkill>();
     }
 }
