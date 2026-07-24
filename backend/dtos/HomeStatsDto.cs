@@ -6,10 +6,10 @@ namespace backend.dtos {
         public int totalJobs { get; set; }
         public int totalFreelancers { get; set; }
         public int totalClients { get; set; }
-        public List<Category> topCategories { get; set; }
+        public List<CategorySummaryDto> topCategories { get; set; }
         public List<JobSummaryDto> topJobs { get; set; }
-        public List<Freelancer> topFreelancers { get; set; }
-        public List<Client> topClients { get; set; }
+        public List<FreelancerSummaryDto> topFreelancers { get; set; }
+        public List<ClientSummaryDto> topClients { get; set; }
     }
 
 }
