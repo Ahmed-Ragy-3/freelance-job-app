@@ -1,9 +1,7 @@
 ﻿using backend.model;
 
-namespace backend.model
-{
-    public class Application
-    {
+namespace backend.model {
+    public class Application {
         public int Id { get; set; }
         public int JobId { get; set; }
         public int FreelancerId { get; set; }

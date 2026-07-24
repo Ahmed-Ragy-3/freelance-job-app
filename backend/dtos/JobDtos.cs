@@ -1,24 +1,23 @@
-namespace backend.Dtos
-{
+using backend.model;
+
+namespace backend.Dtos {
     // Sent by a Client when posting a new job
-    public class JobCreateDto
-    {
+    public class JobCreateDto {
         public string Title { get; set; }
         public decimal Budget { get; set; }
         public string Description { get; set; }
-        public DateTime Deadline { get; set; }
+        public DateOnly Deadline { get; set; }
         public List<int> SkillIds { get; set; }
         public List<int> CategoryIds { get; set; }
         public List<int> TagIds { get; set; }
     }
 
     // Sent when a Client updates a job they own
-    public class JobUpdateDto
-    {
+    public class JobUpdateDto {
         public string Title { get; set; }
         public decimal Budget { get; set; }
         public string Description { get; set; }
-        public DateTime Deadline { get; set; }
+        public DateOnly Deadline { get; set; }
         public string JobStatus { get; set; } // Pending, Approved, Rejected, InProgress, Finished, Passed, Delayed
         public List<int> SkillIds { get; set; }
         public List<int> CategoryIds { get; set; }
@@ -26,13 +25,12 @@ namespace backend.Dtos
     }
 
     // Returned for job listings / job details page
-    public class JobResponseDto
-    {
+    public class JobResponseDto {
         public int Id { get; set; }
         public string Title { get; set; }
         public decimal Budget { get; set; }
         public string Description { get; set; }
-        public DateTime Deadline { get; set; }
+        public DateOnly Deadline { get; set; }
         public string JobStatus { get; set; }
         public DateTime PostedAt { get; set; }
         public DateTime? AcceptedAt { get; set; }
@@ -45,11 +43,25 @@ namespace backend.Dtos
     }
 
     // Lightweight version used inside ApplicationResponseDto / BookmarkResponseDto
-    public class JobSummaryDto
-    {
+    public class JobSummaryDto {
         public int Id { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
         public decimal Budget { get; set; }
         public string JobStatus { get; set; }
+        public DateOnly Deadline { get; set; }
+        public List<string> Tags { get; set; }
+
+        public static JobSummaryDto FromJob(Job job) {
+            return new JobSummaryDto {
+                Id = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Budget = job.Budget,
+                JobStatus = job.JobStatus.ToString(),
+                Deadline = job.Deadline,
+                Tags = job.Tags.Select(t => t.Tag.Name).ToList()
+            };
+        }
     }
 }

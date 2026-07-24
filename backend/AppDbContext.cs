@@ -44,7 +44,7 @@ namespace backend {
                 entity.HasKey(jc => new { jc.JobId, jc.CategoryId });
 
                 entity.HasOne(jc => jc.Job)
-                      .WithMany(j => j.JobCategories)
+                      .WithMany(j => j.Categories)
                       .HasForeignKey(jc => jc.JobId)
                       .IsRequired();
 
@@ -82,21 +82,35 @@ namespace backend {
                       .IsRequired();
             });
 
+            // Ensure Freelancer primary key is configured explicitly so EF doesn't
+            // create shadow keys named FreelancerUserId when mapping relationships.
+            modelBuilder.Entity<Freelancer>(entity => {
+                entity.HasKey(f => f.UserId);
+                entity.HasOne(f => f.User)
+                      .WithOne()
+                      .HasForeignKey<Freelancer>(f => f.UserId)
+                      .IsRequired();
+            });
+
             modelBuilder.Entity<Job>(entity => {
                 entity.Property(j => j.Deadline).HasColumnType("date");
                 entity.Property(j => j.PostedAt).HasDefaultValueSql("GETUTCDATE()");
             });
-
             modelBuilder.Entity<Application>(entity => {
                 entity.HasOne(a => a.Job)
                       .WithMany()
                       .HasForeignKey(a => a.JobId)
                       .IsRequired();
-                entity.HasOne(a => a.Freelancer)
-                      .WithMany()
-                      .HasForeignKey(a => a.FreelancerId)
-                      .IsRequired();
+
                 entity.Property(a => a.AppStatus).HasConversion<string>();
+
+                entity.HasOne(a => a.Freelancer)
+                      .WithMany(f => f.Applications)
+                      .HasForeignKey(a => a.FreelancerId)
+                      .HasPrincipalKey(f => f.UserId)
+                      .IsRequired();
+
+                entity.HasKey(app => new { app.JobId, app.FreelancerId });
             });
 
             modelBuilder.Entity<Bookmark>(entity => {

@@ -21,5 +21,7 @@ namespace backend.model {
         public decimal AvgRate { get; set; }
 
         public User User { get; set; } = null!;
+
+        public ICollection<Application> Applications { get; set; } = new List<Application>();
     }
 }

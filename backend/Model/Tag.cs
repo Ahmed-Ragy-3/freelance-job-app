@@ -16,6 +16,6 @@ namespace backend.Model {
 
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(20, ErrorMessage = "Name must be 20 characters maximum.")]
-        public int Name { get; set; }
+        public string Name { get; set; }
     }
 }

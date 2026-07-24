@@ -19,6 +19,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IFileUploadService, CloudinaryService>();
 
+builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection")
+));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment()) {

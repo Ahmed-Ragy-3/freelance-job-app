@@ -44,10 +44,10 @@ namespace backend.model {
 
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
         
-        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+        public ICollection<JobTag> Tags { get; set; } = new List<JobTag>();
 
-        public ICollection<JobCategory> JobCategories { get; set; } = new List<JobCategory>();
+        public ICollection<JobCategory> Categories { get; set; } = new List<JobCategory>();
         
-        public ICollection<Skill> skills { get; set; } = new List<Skill>();
+        public ICollection<JobSkill> Skills { get; set; } = new List<JobSkill>();
     }
 }
