@@ -27,12 +27,12 @@ namespace backend.Dtos {
     // Lightweight version used inside ApplicationResponseDto
     public class FreelancerSummaryDto {
         public int UserId { get; set; }
-        public string Username { get; set; }
-        public string Bio { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string Bio { get; set; } = string.Empty;
         public double AvgRate { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
         public int NumberOfJobs { get; set; }
-        public List<string> Skills { get; set; }
+        public List<string> Skills { get; set; } = new List<string>();
 
         public static FreelancerSummaryDto FromFreelancer(Freelancer freelancer) {
             return new FreelancerSummaryDto {
