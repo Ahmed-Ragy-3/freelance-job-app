@@ -1,4 +1,4 @@
-using backend.model;
+using backend.Model;
 
 namespace backend.Dtos {
     // Sent when a Freelancer completes/updates their profile

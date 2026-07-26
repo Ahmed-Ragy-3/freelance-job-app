@@ -1,6 +1,6 @@
 ﻿using backend.dtos;
 using backend.Dtos;
-using backend.model;
+using backend.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 

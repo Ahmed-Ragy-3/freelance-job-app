@@ -1,26 +1,26 @@
-using backend.model;
+using backend.Model;
 
 namespace backend.Dtos {
     // Sent when a Client completes/updates their company profile
     public class ClientCreateDto {
-        public string CompanyName { get; set; }
-        public string CompanyDetails { get; set; }
-        public string Logo { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string CompanyDetails { get; set; } = string.Empty;
+        public string Logo { get; set; } = string.Empty;
     }
 
     // Returned when viewing a client's profile (e.g. on a job posting)
     public class ClientResponseDto {
         public int UserId { get; set; }
-        public string CompanyName { get; set; }
-        public string CompanyDetails { get; set; }
-        public string Logo { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string CompanyDetails { get; set; } = string.Empty;
+        public string Logo { get; set; } = string.Empty;
     }
 
     // Lightweight version used inside JobResponseDto so we don't send the full client object
     public class ClientSummaryDto {
         public int UserId { get; set; }
-        public string CompanyName { get; set; }
-        public string CompanyDetails { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string CompanyDetails { get; set; } = string.Empty;
         public string Logo { get; set; }
 
         public static ClientSummaryDto FromClient(Client client) {

@@ -77,7 +77,7 @@ namespace backend.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("backend.model.Attachment", b =>
+            modelBuilder.Entity("backend.Model.Attachment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,7 +109,7 @@ namespace backend.Migrations
                     b.ToTable("Attachments");
                 });
 
-            modelBuilder.Entity("backend.model.Category", b =>
+            modelBuilder.Entity("backend.Model.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +127,7 @@ namespace backend.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("backend.model.Client", b =>
+            modelBuilder.Entity("backend.Model.Client", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -150,7 +150,7 @@ namespace backend.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("backend.model.Freelancer", b =>
+            modelBuilder.Entity("backend.Model.Freelancer", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -169,7 +169,7 @@ namespace backend.Migrations
                     b.ToTable("Freelancers");
                 });
 
-            modelBuilder.Entity("backend.model.Job", b =>
+            modelBuilder.Entity("backend.Model.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -222,7 +222,7 @@ namespace backend.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("backend.model.Notification", b =>
+            modelBuilder.Entity("backend.Model.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -253,7 +253,7 @@ namespace backend.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("backend.model.Review", b =>
+            modelBuilder.Entity("backend.Model.Review", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -279,7 +279,7 @@ namespace backend.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("backend.model.User", b =>
+            modelBuilder.Entity("backend.Model.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -325,13 +325,13 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Model.JobCategory", b =>
                 {
-                    b.HasOne("backend.model.Category", "Category")
+                    b.HasOne("backend.Model.Category", "Category")
                         .WithMany("JobCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("backend.model.Job", "Job")
+                    b.HasOne("backend.Model.Job", "Job")
                         .WithMany("JobCategories")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -344,7 +344,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Model.JobTag", b =>
                 {
-                    b.HasOne("backend.model.Job", "Job")
+                    b.HasOne("backend.Model.Job", "Job")
                         .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -363,7 +363,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Model.Tag", b =>
                 {
-                    b.HasOne("backend.model.Job", "Job")
+                    b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Tags")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -372,9 +372,9 @@ namespace backend.Migrations
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("backend.model.Attachment", b =>
+            modelBuilder.Entity("backend.Model.Attachment", b =>
                 {
-                    b.HasOne("backend.model.Job", "Job")
+                    b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Attachments")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -383,37 +383,37 @@ namespace backend.Migrations
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("backend.model.Client", b =>
+            modelBuilder.Entity("backend.Model.Client", b =>
                 {
-                    b.HasOne("backend.model.User", "User")
+                    b.HasOne("backend.Model.User", "User")
                         .WithOne("Client")
-                        .HasForeignKey("backend.model.Client", "UserId")
+                        .HasForeignKey("backend.Model.Client", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.model.Freelancer", b =>
+            modelBuilder.Entity("backend.Model.Freelancer", b =>
                 {
-                    b.HasOne("backend.model.User", "User")
+                    b.HasOne("backend.Model.User", "User")
                         .WithOne("Freelancer")
-                        .HasForeignKey("backend.model.Freelancer", "UserId")
+                        .HasForeignKey("backend.Model.Freelancer", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.model.Job", b =>
+            modelBuilder.Entity("backend.Model.Job", b =>
                 {
-                    b.HasOne("backend.model.User", "Client")
+                    b.HasOne("backend.Model.User", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("backend.model.Client", null)
+                    b.HasOne("backend.Model.Client", null)
                         .WithMany("Jobs")
                         .HasForeignKey("ClientUserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -422,9 +422,9 @@ namespace backend.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("backend.model.Notification", b =>
+            modelBuilder.Entity("backend.Model.Notification", b =>
                 {
-                    b.HasOne("backend.model.User", "User")
+                    b.HasOne("backend.Model.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -433,28 +433,28 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.model.Review", b =>
+            modelBuilder.Entity("backend.Model.Review", b =>
                 {
-                    b.HasOne("backend.model.Job", "Job")
+                    b.HasOne("backend.Model.Job", "Job")
                         .WithOne("Review")
-                        .HasForeignKey("backend.model.Review", "JobId")
+                        .HasForeignKey("backend.Model.Review", "JobId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("backend.model.Category", b =>
+            modelBuilder.Entity("backend.Model.Category", b =>
                 {
                     b.Navigation("JobCategories");
                 });
 
-            modelBuilder.Entity("backend.model.Client", b =>
+            modelBuilder.Entity("backend.Model.Client", b =>
                 {
                     b.Navigation("Jobs");
                 });
 
-            modelBuilder.Entity("backend.model.Job", b =>
+            modelBuilder.Entity("backend.Model.Job", b =>
                 {
                     b.Navigation("Attachments");
 
@@ -465,7 +465,7 @@ namespace backend.Migrations
                     b.Navigation("Tags");
                 });
 
-            modelBuilder.Entity("backend.model.User", b =>
+            modelBuilder.Entity("backend.Model.User", b =>
                 {
                     b.Navigation("Client");
 

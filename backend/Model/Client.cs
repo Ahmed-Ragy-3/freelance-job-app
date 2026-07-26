@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model {
+namespace backend.Model {
     [Table("Clients")]
     public class Client {
         [Key]
-        [ForeignKey("User")]
+        [ForeignKey(nameof(User))]
         public int UserId { get; set; }
 
         [Required(ErrorMessage = "Company name is required.")]
@@ -19,5 +19,7 @@ namespace backend.model {
         [StringLength(500, ErrorMessage = "Logo URL is too long.")]
         public string? Logo { get; set; }
         public User User { get; set; } = null!;
+
+        public ICollection<Job> Jobs { get; set; } = new List<Job>();
     }
 }

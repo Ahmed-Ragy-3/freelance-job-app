@@ -1,4 +1,3 @@
-using backend.model;
 using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,19 +47,19 @@ namespace backend.Data {
                 await SeedNotificationsAsync(users);
             }
 
-            if (!await _context.attachments.AnyAsync()) {
+            if (!await _context.Attachments.AnyAsync()) {
                 await SeedAttachmentsAsync(seededJobs);
             }
 
-            if (!await _context.reviews.AnyAsync()) {
+            if (!await _context.Reviews.AnyAsync()) {
                 await SeedReviewsAsync(seededJobs);
             }
 
-            if (!await _context.jobCategories.AnyAsync()) {
+            if (!await _context.JobCategories.AnyAsync()) {
                 await SeedJobCategoriesAsync(seededJobs, categories);
             }
 
-            if (!await _context.jobTags.AnyAsync()) {
+            if (!await _context.JobTags.AnyAsync()) {
                 await SeedJobTagsAsync(seededJobs, tags);
             }
 
@@ -163,7 +162,7 @@ namespace backend.Data {
         private async Task SeedJobCategoriesAsync(List<Job> jobs, List<Category> categories) {
             foreach (var job in jobs) {
                 foreach (var category in categories.OrderBy(_ => _random.Next()).Take(1 + _random.Next(2))) {
-                    _context.jobCategories.Add(new JobCategory { JobId = job.Id, CategoryId = category.Id });
+                    _context.JobCategories.Add(new JobCategory { JobId = job.Id, CategoryId = category.Id });
                 }
             }
 
@@ -173,7 +172,7 @@ namespace backend.Data {
         private async Task SeedJobTagsAsync(List<Job> jobs, List<Tag> tags) {
             foreach (var job in jobs) {
                 foreach (var tag in tags.OrderBy(_ => _random.Next()).Take(2 + _random.Next(3))) {
-                    _context.jobTags.Add(new JobTag { JobId = job.Id, TagId = tag.Id });
+                    _context.JobTags.Add(new JobTag { JobId = job.Id, TagId = tag.Id });
                 }
             }
 
@@ -193,7 +192,7 @@ namespace backend.Data {
         private async Task SeedAttachmentsAsync(List<Job> jobs) {
             foreach (var job in jobs) {
                 if (_random.Next(100) < 70) {
-                    _context.attachments.Add(new Attachment {
+                    _context.Attachments.Add(new Attachment {
                         JobId = job.Id,
                         Url = $"https://example.com/files/{job.Id}-attachment.pdf",
                         FileName = $"{job.Id}_brief.pdf",
@@ -208,7 +207,7 @@ namespace backend.Data {
         private async Task SeedReviewsAsync(List<Job> jobs) {
             foreach (var job in jobs) {
                 if (job.JobStatus == JobStatus.Finished || job.JobStatus == JobStatus.Passed) {
-                    _context.reviews.Add(new Review {
+                    _context.Reviews.Add(new Review {
                         JobId = job.Id,
                         Rate = 3 + _random.Next(3),
                         Comment = $"Great collaboration on {GetRandomWord()} deliverables."
@@ -277,32 +276,36 @@ namespace backend.Data {
                 "UI/UX", "Mobile", "Python", "Node.js", "TypeScript", "Testing", "Security", "AI", "Data Engineering", "Product Design"
             };
 
-            var entities = skills.Select(name => new Skill { Name = name }).ToList();
+            var entities = skills.Select(name => new Skill {
+                Name = name,
+                FreelancerSkills = new List<FreelancerSkill>(),
+                JobSkills = new List<JobSkill>()
+            }).ToList();
             await _context.Skills.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
             return entities;
         }
 
         private async Task<List<Category>> SeedCategoriesAsync() {
-            if (await _context.categories.AnyAsync()) {
-                return await _context.categories.ToListAsync();
+            if (await _context.Categories.AnyAsync()) {
+                return await _context.Categories.ToListAsync();
             }
 
             var categories = new[] { "Web Development", "Mobile", "Design", "Data", "Cloud", "Marketing", "Writing", "Support" };
             var entities = categories.Select(name => new Category { Name = name }).ToList();
-            await _context.categories.AddRangeAsync(entities);
+            await _context.Categories.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
             return entities;
         }
 
         private async Task<List<Tag>> SeedTagsAsync() {
-            if (await _context.tags.AnyAsync()) {
-                return await _context.tags.ToListAsync();
+            if (await _context.Tags.AnyAsync()) {
+                return await _context.Tags.ToListAsync();
             }
 
             var tags = new[] { "Urgent", "Remote", "Full-Time", "Part-Time", "React", "Backend", "Startup", "Enterprise", "API", "Cloud", "AI", "Design" };
             var entities = tags.Select(name => new Tag { Name = name }).ToList();
-            await _context.tags.AddRangeAsync(entities);
+            await _context.Tags.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
             return entities;
         }

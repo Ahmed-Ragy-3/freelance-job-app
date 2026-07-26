@@ -1,5 +1,5 @@
 ﻿using backend.Dtos;
-using backend.model;
+using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services {

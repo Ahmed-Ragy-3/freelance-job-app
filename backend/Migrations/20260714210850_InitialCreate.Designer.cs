@@ -25,7 +25,7 @@ namespace backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("backend.model.Attachment", b =>
+            modelBuilder.Entity("backend.Model.Attachment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +57,7 @@ namespace backend.Migrations
                     b.ToTable("attachments");
                 });
 
-            modelBuilder.Entity("backend.model.Categories", b =>
+            modelBuilder.Entity("backend.Model.Categories", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace backend.Migrations
                     b.ToTable("categories");
                 });
 
-            modelBuilder.Entity("backend.model.Job", b =>
+            modelBuilder.Entity("backend.Model.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,9 +118,9 @@ namespace backend.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("backend.model.Attachment", b =>
+            modelBuilder.Entity("backend.Model.Attachment", b =>
                 {
-                    b.HasOne("backend.model.Job", "Job")
+                    b.HasOne("backend.Model.Job", "Job")
                         .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Restrict)

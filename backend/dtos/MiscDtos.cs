@@ -5,14 +5,14 @@ namespace backend.Dtos
     {
         public int JobId { get; set; }
         public int Rate { get; set; } // e.g. 1-5
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
     }
 
     public class ReviewResponseDto
     {
         public int JobId { get; set; }
         public int Rate { get; set; }
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
     }
 
     // ---- Bookmark ----
@@ -30,7 +30,7 @@ namespace backend.Dtos
     public class NotificationResponseDto
     {
         public int Id { get; set; }
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public bool Read { get; set; }
     }
@@ -40,15 +40,15 @@ namespace backend.Dtos
     {
         public int JobId { get; set; }
         // actual file comes via IFormFile in the controller, not in this DTO
-        public string FileName { get; set; }
-        public string Type { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 
     public class AttachmentResponseDto
     {
         public int Id { get; set; }
-        public string Url { get; set; }
-        public string FileName { get; set; }
-        public string Type { get; set; }
+        public string Url { get; set; } = string.Empty;
+        public string FileName { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 }

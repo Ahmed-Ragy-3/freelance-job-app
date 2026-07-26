@@ -4,7 +4,7 @@ namespace backend.Dtos
     public class ApplicationCreateDto
     {
         public int JobId { get; set; }
-        public string CoverLetter { get; set; }
+        public string CoverLetter { get; set; } = string.Empty;
         public decimal Bid { get; set; }
         public int TimelineDays { get; set; }
     }
@@ -12,17 +12,17 @@ namespace backend.Dtos
     // Sent by a Client to accept/reject an application
     public class ApplicationStatusUpdateDto
     {
-        public string AppStatus { get; set; } // Draft, InProgress, Accepted, Rejected
+        public string AppStatus { get; set; } = string.Empty; // Draft, InProgress, Accepted, Rejected
     }
 
     // Returned when viewing applications (e.g. Client viewing applicants for their job)
     public class ApplicationResponseDto
     {
         public int Id { get; set; }
-        public string CoverLetter { get; set; }
+        public string CoverLetter { get; set; } = string.Empty;
         public decimal Bid { get; set; }
         public int TimelineDays { get; set; }
-        public string AppStatus { get; set; }
+        public string AppStatus { get; set; } = string.Empty;
         public FreelancerSummaryDto Freelancer { get; set; }
         public JobSummaryDto Job { get; set; }
     }

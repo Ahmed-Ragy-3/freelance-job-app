@@ -1,5 +1,4 @@
-﻿using backend.model;
-using backend.Model;
+﻿using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend {
@@ -10,13 +9,13 @@ namespace backend {
         }
 
         public DbSet<Job> Jobs { get; set; }
-        public DbSet<Category> categories { get; set; }
-        public DbSet<JobCategory> jobCategories { get; set; }
-        public DbSet<Tag> tags { get; set; }
-        public DbSet<JobTag> jobTags{ get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<JobCategory> JobCategories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<JobTag> JobTags { get; set; }
 
-        public DbSet<Attachment> attachments { get; set; }
-        public DbSet<Review> reviews { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Freelancer> Freelancers { get; set; }
@@ -101,16 +100,19 @@ namespace backend {
             modelBuilder.Entity<Job>(entity => {
                 entity.Property(j => j.Deadline).HasColumnType("date");
                 entity.Property(j => j.PostedAt).HasDefaultValueSql("GETUTCDATE()");
+
                 entity.HasOne(j => j.Client)
                       .WithMany()
                       .HasForeignKey(j => j.ClientId)
-                      .HasPrincipalKey(u => u.Id)
                       .OnDelete(DeleteBehavior.Restrict)
                       .IsRequired();
             });
+
             modelBuilder.Entity<Application>(entity => {
+                entity.HasKey(a => new { a.JobId, a.FreelancerId });
+
                 entity.HasOne(a => a.Job)
-                      .WithMany()
+                      .WithMany(j => j.Applications)
                       .HasForeignKey(a => a.JobId)
                       .IsRequired();
 
@@ -121,8 +123,6 @@ namespace backend {
                       .HasForeignKey(a => a.FreelancerId)
                       .HasPrincipalKey(f => f.UserId)
                       .IsRequired();
-
-                entity.HasKey(app => new { app.JobId, app.FreelancerId });
             });
 
             modelBuilder.Entity<Bookmark>(entity => {
@@ -161,6 +161,7 @@ namespace backend {
                       .HasForeignKey(js => js.SkillId)
                       .IsRequired();
             });
+
             foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                                                .SelectMany(e => e.GetForeignKeys())) {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
