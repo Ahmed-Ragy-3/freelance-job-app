@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model {
+namespace backend.Model {
     public class Job {
         [Key]
         public int Id { get; set; }
@@ -38,16 +38,16 @@ namespace backend.model {
         [ForeignKey(nameof(Client))]
         public int ClientId { get; set; }
 
-        public User Client { get; set; } = null!;
+        //[ForeignKey(nameof(ClientId))]
+        public Client Client { get; set; } = null!;
 
         public Review? Review { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
-        
-        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
-
-        public ICollection<JobCategory> JobCategories { get; set; } = new List<JobCategory>();
-        
-        public ICollection<Skill> skills { get; set; } = new List<Skill>();
+        public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+        public ICollection<JobTag> Tags { get; set; } = new List<JobTag>();
+        public ICollection<JobCategory> Categories { get; set; } = new List<JobCategory>();
+        public ICollection<JobSkill> Skills { get; set; } = new List<JobSkill>();
+        public ICollection<Application> Applications { get; set; } = new List<Application>();
     }
 }

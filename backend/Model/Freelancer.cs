@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model {
+namespace backend.Model {
     [Table("Freelancers")]
     public class Freelancer {
         [Key]
@@ -21,5 +21,9 @@ namespace backend.model {
         public decimal AvgRate { get; set; }
 
         public User User { get; set; } = null!;
+
+        public ICollection<Application> Applications { get; set; } = new List<Application>();
+        public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+        public ICollection<FreelancerSkill> FreelancerSkills { get; set; } = new List<FreelancerSkill>();
     }
 }

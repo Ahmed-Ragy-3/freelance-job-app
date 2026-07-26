@@ -1,8 +1,11 @@
 using backend;
+using backend.Data;
 using backend.FileUpload;
 using backend.Options;
+using backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,16 +14,30 @@ builder.Services.Configure<AttachmentOptions>(builder.Configuration.GetSection("
 builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
 
 builder.Services.AddControllers();
+builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IFileUploadService, CloudinaryService>();
+builder.Services.AddScoped<DatabaseSeeder>();
 
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
 ));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) {
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+
+    if (app.Environment.IsDevelopment()) {
+        dbContext.Database.EnsureDeleted();
+    }
+
+    dbContext.Database.EnsureCreated();
+    await seeder.SeedAsync();
+}
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
@@ -30,7 +47,6 @@ if (app.Environment.IsDevelopment()) {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Freelance Job API v1");
     });
 }
-
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
@@ -40,3 +56,15 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static class DependencyInjection {
+    public static IServiceCollection AddServices(this IServiceCollection services) {
+        services.AddScoped<CategoryService>();
+        services.AddScoped<ClientService>();
+        services.AddScoped<FreelancerService>();
+        services.AddScoped<HomeStatisticsService>();
+        services.AddScoped<JobService>();
+
+        return services;
+    }
+}

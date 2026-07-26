@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model {
+namespace backend.Model {
     [Table("Clients")]
     public class Client {
         [Key]
-        [ForeignKey("User")]
+        [ForeignKey(nameof(User))]
         public int UserId { get; set; }
 
         [Required(ErrorMessage = "Company name is required.")]

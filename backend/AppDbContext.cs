@@ -1,5 +1,4 @@
-﻿using backend.model;
-using backend.Model;
+﻿using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend {
@@ -10,13 +9,13 @@ namespace backend {
         }
 
         public DbSet<Job> Jobs { get; set; }
-        public DbSet<Category> categories { get; set; }
-        public DbSet<JobCategory> jobCategories { get; set; }
-        public DbSet<Tag> tags { get; set; }
-        public DbSet<JobTag> jobTags{ get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<JobCategory> JobCategories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<JobTag> JobTags { get; set; }
 
-        public DbSet<Attachment> attachments { get; set; }
-        public DbSet<Review> reviews { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Freelancer> Freelancers { get; set; }
@@ -44,7 +43,7 @@ namespace backend {
                 entity.HasKey(jc => new { jc.JobId, jc.CategoryId });
 
                 entity.HasOne(jc => jc.Job)
-                      .WithMany(j => j.JobCategories)
+                      .WithMany(j => j.Categories)
                       .HasForeignKey(jc => jc.JobId)
                       .IsRequired();
 
@@ -58,12 +57,12 @@ namespace backend {
                 entity.HasKey(jt => new { jt.JobId, jt.TagId });
 
                 entity.HasOne(jt => jt.Job)
-                      .WithMany()
+                      .WithMany(j => j.Tags)
                       .HasForeignKey(jt => jt.JobId)
                       .IsRequired();
 
                 entity.HasOne(jt => jt.Tag)
-                      .WithMany()
+                      .WithMany(t => t.JobTags)
                       .HasForeignKey(jt => jt.TagId)
                       .IsRequired();
             });
@@ -82,39 +81,68 @@ namespace backend {
                       .IsRequired();
             });
 
+            modelBuilder.Entity<Freelancer>(entity => {
+                entity.HasKey(f => f.UserId);
+                entity.HasOne(f => f.User)
+                      .WithOne(u => u.Freelancer)
+                      .HasForeignKey<Freelancer>(f => f.UserId)
+                      .IsRequired();
+            });
+
+            modelBuilder.Entity<Client>(entity => {
+                entity.HasKey(c => c.UserId);
+                entity.HasOne(c => c.User)
+                      .WithOne(u => u.Client)
+                      .HasForeignKey<Client>(c => c.UserId)
+                      .IsRequired();
+            });
+
             modelBuilder.Entity<Job>(entity => {
                 entity.Property(j => j.Deadline).HasColumnType("date");
                 entity.Property(j => j.PostedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasOne(j => j.Client)
+                      .WithMany()
+                      .HasForeignKey(j => j.ClientId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired();
             });
 
             modelBuilder.Entity<Application>(entity => {
+                entity.HasKey(a => new { a.JobId, a.FreelancerId });
+
                 entity.HasOne(a => a.Job)
-                      .WithMany()
+                      .WithMany(j => j.Applications)
                       .HasForeignKey(a => a.JobId)
                       .IsRequired();
-                entity.HasOne(a => a.Freelancer)
-                      .WithMany()
-                      .HasForeignKey(a => a.FreelancerId)
-                      .IsRequired();
+
                 entity.Property(a => a.AppStatus).HasConversion<string>();
+
+                entity.HasOne(a => a.Freelancer)
+                      .WithMany(f => f.Applications)
+                      .HasForeignKey(a => a.FreelancerId)
+                      .HasPrincipalKey(f => f.UserId)
+                      .IsRequired();
             });
 
             modelBuilder.Entity<Bookmark>(entity => {
                 entity.HasOne(b => b.Job)
-                      .WithMany()
+                      .WithMany(j => j.Bookmarks)
                       .HasForeignKey(b => b.JobId)
                       .IsRequired();
                 entity.HasOne(b => b.Freelancer)
-                      .WithMany()
+                      .WithMany(f => f.Bookmarks)
                       .HasForeignKey(b => b.FreelancerId)
+                      .HasPrincipalKey(f => f.UserId)
                       .IsRequired();
             });
 
             modelBuilder.Entity<FreelancerSkill>(entity => {
                 entity.HasKey(fs => new { fs.FreelancerId, fs.SkillId });
                 entity.HasOne(fs => fs.Freelancer)
-                      .WithMany()
+                      .WithMany(f => f.FreelancerSkills)
                       .HasForeignKey(fs => fs.FreelancerId)
+                      .HasPrincipalKey(f => f.UserId)
                       .IsRequired();
                 entity.HasOne(fs => fs.Skill)
                       .WithMany(s => s.FreelancerSkills)
@@ -125,7 +153,7 @@ namespace backend {
             modelBuilder.Entity<JobSkill>(entity => {
                 entity.HasKey(js => new { js.JobId, js.SkillId });
                 entity.HasOne(js => js.Job)
-                      .WithMany()
+                      .WithMany(j => j.Skills)
                       .HasForeignKey(js => js.JobId)
                       .IsRequired();
                 entity.HasOne(js => js.Skill)
@@ -133,6 +161,7 @@ namespace backend {
                       .HasForeignKey(js => js.SkillId)
                       .IsRequired();
             });
+
             foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                                                .SelectMany(e => e.GetForeignKeys())) {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
