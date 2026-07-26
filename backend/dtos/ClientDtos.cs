@@ -1,6 +1,6 @@
 using backend.Model;
 
-namespace backend.Dtos {
+namespace backend.DTOs {
     // Sent when a Client completes/updates their company profile
     public class ClientCreateDto {
         public string CompanyName { get; set; } = string.Empty;

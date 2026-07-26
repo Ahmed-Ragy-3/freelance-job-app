@@ -1,6 +1,6 @@
 using backend.Model;
 
-namespace backend.Dtos {
+namespace backend.DTOs {
     public class SkillCreateDto {
         public string Name { get; set; } = string.Empty;
     }

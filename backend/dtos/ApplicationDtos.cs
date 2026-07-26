@@ -1,8 +1,6 @@
-namespace backend.Dtos
-{
+namespace backend.DTOs {
     // Sent by a Freelancer when applying to a job
-    public class ApplicationCreateDto
-    {
+    public class ApplicationCreateDto {
         public int JobId { get; set; }
         public string CoverLetter { get; set; } = string.Empty;
         public decimal Bid { get; set; }
@@ -10,14 +8,12 @@ namespace backend.Dtos
     }
 
     // Sent by a Client to accept/reject an application
-    public class ApplicationStatusUpdateDto
-    {
+    public class ApplicationStatusUpdateDto {
         public string AppStatus { get; set; } = string.Empty; // Draft, InProgress, Accepted, Rejected
     }
 
     // Returned when viewing applications (e.g. Client viewing applicants for their job)
-    public class ApplicationResponseDto
-    {
+    public class ApplicationResponseDto {
         public int Id { get; set; }
         public string CoverLetter { get; set; } = string.Empty;
         public decimal Bid { get; set; }

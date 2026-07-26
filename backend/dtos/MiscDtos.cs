@@ -1,4 +1,4 @@
-namespace backend.Dtos
+namespace backend.DTOs
 {
     // ---- Review ----
     public class ReviewCreateDto

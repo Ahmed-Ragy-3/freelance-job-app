@@ -1,6 +1,6 @@
 using backend.Model;
 
-namespace backend.Dtos {
+namespace backend.DTOs {
     // Sent when a Freelancer completes/updates their profile
     public class FreelancerCreateDto {
         public string Bio { get; set; }

@@ -1,6 +1,6 @@
 using backend.Model;
 
-namespace backend.Dtos {
+namespace backend.DTOs {
     // Sent by a Client when posting a new job
     public class JobCreateDto {
         public string Title { get; set; } = string.Empty;
