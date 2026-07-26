@@ -1,10 +1,10 @@
-﻿using backend.model;
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.Model {
-    [Table("JobCategories")]
-    public class JobCategory {
+namespace backend.Models {
+    [Table("JobTags")]
+    public class JobTag {
         [Required]
         [ForeignKey(nameof(Job))]
         public int JobId { get; set; }
@@ -12,9 +12,9 @@ namespace backend.Model {
         public Job Job { get; set; } = null!;
 
         [Required]
-        [ForeignKey(nameof(Category))]
-        public int CategoryId { get; set; }
+        [ForeignKey(nameof(Tag))]
+        public int TagId { get; set; }
 
-        public Category Category { get; set; } = null!;
+        public Tag Tag { get; set; } = null!;
     }
 }

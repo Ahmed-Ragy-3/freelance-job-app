@@ -1,6 +1,5 @@
-﻿using backend.model;
-
-namespace backend.model
+﻿using backend.Models;
+namespace backend.Models
 {
     public class Application
     {

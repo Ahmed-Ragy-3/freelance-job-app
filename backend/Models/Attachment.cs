@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model {
+namespace backend.Models
+{
     [Table("Attachments")]
     public class Attachment {
         [Key]

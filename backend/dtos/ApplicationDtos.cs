@@ -1,4 +1,4 @@
-namespace backend.Dtos
+namespace backend.DTOs
 {
     // Sent by a Freelancer when applying to a job
     public class ApplicationCreateDto

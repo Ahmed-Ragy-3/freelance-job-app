@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\backend",
+    "\\backend\\Options",
+    "\\backend\\Properties"
   ],
+  "SelectedNode": "\\backend\\backend.slnx",
   "PreviewInSolutionExplorer": false
 }

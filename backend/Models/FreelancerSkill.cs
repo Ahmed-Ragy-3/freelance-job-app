@@ -1,6 +1,4 @@
-﻿using backend.model;
-
-namespace backend.model
+﻿namespace backend.Models
 {
     public class FreelancerSkill
     {

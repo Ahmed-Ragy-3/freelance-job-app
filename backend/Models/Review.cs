@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.model {
+namespace backend.Models {
     [Table("Reviews")]
     public class Review {
         [Key]

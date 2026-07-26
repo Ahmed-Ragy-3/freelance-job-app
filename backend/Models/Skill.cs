@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace backend.model
+namespace backend.Models
 {
     public class Skill
     {

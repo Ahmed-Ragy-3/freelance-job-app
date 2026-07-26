@@ -1,4 +1,4 @@
-namespace backend.Dtos
+namespace backend.DTOs
 {
     // ---- Skill ----
     public class SkillCreateDto

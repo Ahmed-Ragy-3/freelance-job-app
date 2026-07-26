@@ -1,4 +1,4 @@
-namespace backend.Dtos
+namespace backend.DTOs
 {
     // Sent by a Client when posting a new job
     public class JobCreateDto

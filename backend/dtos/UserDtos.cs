@@ -1,4 +1,4 @@
-namespace backend.Dtos
+namespace backend.DTOs
 {
     // Sent by frontend when someone signs up
     public class RegisterDto

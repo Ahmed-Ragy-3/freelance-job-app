@@ -1,8 +1,8 @@
-﻿using backend.model;
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.Model {
+namespace backend.Models {
     [Table("Tags")]
     public class Tag {
         [Key]

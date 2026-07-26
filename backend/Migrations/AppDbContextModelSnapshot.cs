@@ -17,7 +17,7 @@ namespace backend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -34,7 +34,7 @@ namespace backend.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("JobCategories");
+                    b.ToTable("JobCategories", (string)null);
                 });
 
             modelBuilder.Entity("backend.Model.JobTag", b =>
@@ -49,7 +49,7 @@ namespace backend.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("JobTags");
+                    b.ToTable("JobTags", (string)null);
                 });
 
             modelBuilder.Entity("backend.Model.Tag", b =>
@@ -71,7 +71,7 @@ namespace backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Application", b =>
@@ -108,7 +108,7 @@ namespace backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("Applications");
+                    b.ToTable("Applications", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Attachment", b =>
@@ -140,7 +140,7 @@ namespace backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("Attachments");
+                    b.ToTable("Attachments", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Bookmark", b =>
@@ -163,7 +163,7 @@ namespace backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("Bookmarks");
+                    b.ToTable("Bookmarks", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Category", b =>
@@ -181,7 +181,7 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Client", b =>
@@ -204,7 +204,7 @@ namespace backend.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Freelancer", b =>
@@ -223,7 +223,7 @@ namespace backend.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Freelancers");
+                    b.ToTable("Freelancers", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.FreelancerSkill", b =>
@@ -241,7 +241,7 @@ namespace backend.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("FreelancerSkills");
+                    b.ToTable("FreelancerSkills", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Job", b =>
@@ -294,7 +294,7 @@ namespace backend.Migrations
 
                     b.HasIndex("ClientUserId");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.JobSkill", b =>
@@ -309,7 +309,7 @@ namespace backend.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("JobSkills");
+                    b.ToTable("JobSkills", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Notification", b =>
@@ -340,7 +340,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Review", b =>
@@ -366,7 +366,7 @@ namespace backend.Migrations
                     b.HasIndex("JobId")
                         .IsUnique();
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.Skill", b =>
@@ -388,7 +388,7 @@ namespace backend.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("Skills");
+                    b.ToTable("Skills", (string)null);
                 });
 
             modelBuilder.Entity("backend.model.User", b =>
@@ -432,7 +432,7 @@ namespace backend.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("backend.Model.JobCategory", b =>
