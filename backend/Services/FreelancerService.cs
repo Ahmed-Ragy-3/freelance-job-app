@@ -6,7 +6,13 @@ namespace backend.Services {
     public class FreelancerService(AppDbContext appDbContext) {
         public async Task<List<FreelancerSummaryDto>> GetTopNFreelancersAsync(int n) {
             var freelancers = await appDbContext.Freelancers
-                            .OrderByDescending(f => f.Applications.Count())
+                            .Include(f => f.User)
+                            .Include(f => f.Applications)
+                                .ThenInclude(a => a.Job)
+                                .ThenInclude(j => j.Review)
+                            .Include(f => f.FreelancerSkills)
+                                .ThenInclude(fs => fs.Skill)
+                            .OrderByDescending(f => f.Applications.Count)
                             .Take(n)
                             .ToListAsync();
 
