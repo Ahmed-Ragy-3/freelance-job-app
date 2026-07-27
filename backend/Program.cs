@@ -8,10 +8,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-<<<<<<< HEAD
-
-=======
->>>>>>> ad5b648f556668f09bdd02b0b0d915a309dce957
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -113,7 +109,6 @@ if (app.Environment.IsDevelopment()) {
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 
-// IMPORTANT: UseAuthentication must come BEFORE UseAuthorization
 app.UseAuthentication();
 app.UseAuthorization();
 
