@@ -1,10 +1,13 @@
 ﻿using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend {
-    public class AppDbContext : DbContext {
+namespace backend
+{
+    public class AppDbContext : DbContext
+    {
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
 
         }
 
@@ -26,7 +29,8 @@ namespace backend {
         public DbSet<Skill> Skills { get; set; }
         public DbSet<FreelancerSkill> FreelancerSkills { get; set; }
         public DbSet<JobSkill> JobSkills { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>(entity => {
@@ -163,7 +167,8 @@ namespace backend {
             });
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-                                               .SelectMany(e => e.GetForeignKeys())) {
+                                               .SelectMany(e => e.GetForeignKeys()))
+            {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
         }

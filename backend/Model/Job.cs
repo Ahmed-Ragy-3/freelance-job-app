@@ -38,7 +38,7 @@ namespace backend.Model {
         [ForeignKey(nameof(Client))]
         public int ClientId { get; set; }
 
-        //[ForeignKey(nameof(ClientId))]
+        //[ForeignKey(nameof(ClientId))]WW
         public Client Client { get; set; } = null!;
 
         public Review? Review { get; set; }
