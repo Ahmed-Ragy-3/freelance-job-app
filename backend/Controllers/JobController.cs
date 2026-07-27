@@ -13,5 +13,27 @@ namespace backend.Controllers {
 
             return Ok(jobs);
         }
+
+        //[HttpPost]
+        //[ProducesResponseType(typeof(JobSummaryDto), StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<ActionResult<JobSummaryDto>> CreateJob([FromBody] CreateJobDto dto) {
+        //    var job = await jobService.CreateJobAsync(dto);
+
+        //    return CreatedAtAction(
+        //        nameof(GetJobById),
+        //        new { id = job.Id },
+        //        job);
+        //}
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<JobSummaryDto>> GetJobById(int id) {
+            var job = await jobService.GetJobByIdAsync(id);
+
+            if (job == null)
+                return NotFound();
+
+            return Ok(job);
+        }
     }
 }

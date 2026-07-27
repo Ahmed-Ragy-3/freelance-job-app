@@ -13,6 +13,18 @@ namespace backend.Services {
             return jobs.Select(JobSummaryDto.FromJob).ToList();
         }
 
+        public async Task<JobSummaryDto?> GetJobByIdAsync(int id) {
+            var job = await appDbContext.Jobs
+                    .Include(j => j.Categories)
+                        .ThenInclude(jc => jc.Category)
+                    .Include(j => j.Tags)
+                        .ThenInclude(jt => jt.Tag)
+                    .Include(j => j.Applications)
+                    .FirstOrDefaultAsync(j => j.Id == id);
+            
+            return job == null ? null : JobSummaryDto.FromJob(job);
+        }
+
         public async Task<PaginatedResponse<JobSummaryDto>> GetJobsAsync(JobFilterDto filter) {
             var query = appDbContext.Jobs.AsNoTracking().AsQueryable();
 
@@ -58,9 +70,14 @@ namespace backend.Services {
             };
 
             var jobs = await query
-                .Skip((filter.Page - 1) * filter.PageSize)
-                .Take(filter.PageSize)
-                .ToListAsync();
+                        .Skip((filter.Page - 1) * filter.PageSize)
+                        .Include(j => j.Categories)
+                            .ThenInclude(jc => jc.Category)
+                        .Include(j => j.Tags)
+                            .ThenInclude(jt => jt.Tag)
+                        .Include(j => j.Applications)
+                        .Take(filter.PageSize)
+                        .ToListAsync();
 
             return new PaginatedResponse<JobSummaryDto> {
                 Items = jobs.Select(JobSummaryDto.FromJob).ToList(),

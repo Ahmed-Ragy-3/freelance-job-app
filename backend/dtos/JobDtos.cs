@@ -51,6 +51,8 @@ namespace backend.DTOs {
         public decimal Budget { get; set; }
         public string JobStatus { get; set; } = string.Empty;
         public DateOnly Deadline { get; set; }
+        public DateTime PostedAt { get; set; }
+        public List<string> Categories { get; set; } = new List<string>();
         public List<string> Tags { get; set; } = new List<string>();
         public int Applicants { get; set; }
 
@@ -62,6 +64,8 @@ namespace backend.DTOs {
                 Budget = job.Budget,
                 JobStatus = job.JobStatus.ToString(),
                 Deadline = job.Deadline,
+                PostedAt = job.PostedAt,
+                Categories = job.Categories.Select(c => c.Category.Name).ToList(),
                 Tags = job.Tags.Select(t => t.Tag.Name).ToList(),
                 Applicants = job.Applications.Count
             };
