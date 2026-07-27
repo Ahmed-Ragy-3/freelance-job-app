@@ -2,10 +2,13 @@
 using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend {
-    public class AppDbContext : DbContext {
+namespace backend
+{
+    public class AppDbContext : DbContext
+    {
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
 
         }
 
@@ -13,9 +16,9 @@ namespace backend {
         public DbSet<Category> categories { get; set; }
         public DbSet<JobCategory> jobCategories { get; set; }
         public DbSet<Tag> tags { get; set; }
-        public DbSet<JobTag> jobTags{ get; set; }
+        public DbSet<JobTag> jobTags { get; set; }
 
-        public DbSet<Attachment> attachments { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Review> reviews { get; set; }
 
         public DbSet<User> Users { get; set; }
@@ -27,7 +30,8 @@ namespace backend {
         public DbSet<Skill> Skills { get; set; }
         public DbSet<FreelancerSkill> FreelancerSkills { get; set; }
         public DbSet<JobSkill> JobSkills { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>(entity => {
@@ -134,7 +138,8 @@ namespace backend {
                       .IsRequired();
             });
             foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-                                               .SelectMany(e => e.GetForeignKeys())) {
+                                               .SelectMany(e => e.GetForeignKeys()))
+            {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
         }

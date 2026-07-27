@@ -43,7 +43,6 @@ namespace backend.model {
         public Review? Review { get; set; }
 
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
-        
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
         public ICollection<JobCategory> JobCategories { get; set; } = new List<JobCategory>();
