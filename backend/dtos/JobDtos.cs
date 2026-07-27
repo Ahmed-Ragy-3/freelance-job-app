@@ -5,11 +5,11 @@ namespace backend.DTOs {
     // Sent by a Client when posting a new job
     public class JobCreateDto {
         public string Title { get; set; } = string.Empty;
-        public decimal Budget { get; set; }
         public string Description { get; set; } = string.Empty;
+        public decimal Budget { get; set; }
         public DateOnly Deadline { get; set; }
-        public List<int> SkillIds { get; set; } = new List<int>();
         public List<int> CategoryIds { get; set; } = new List<int>();
+        public List<int> SkillIds { get; set; } = new List<int>();
         public List<int> TagIds { get; set; } = new List<int>();
     }
 
@@ -52,8 +52,8 @@ namespace backend.DTOs {
         public string JobStatus { get; set; } = string.Empty;
         public DateOnly Deadline { get; set; }
         public DateTime PostedAt { get; set; }
-        public List<string> Categories { get; set; } = new List<string>();
-        public List<string> Tags { get; set; } = new List<string>();
+        public List<Category> Categories { get; set; } = new List<Category>();
+        public List<Tag> Tags { get; set; } = new List<Tag>();
         public int Applicants { get; set; }
 
         public static JobSummaryDto FromJob(Job job) {
@@ -65,9 +65,35 @@ namespace backend.DTOs {
                 JobStatus = job.JobStatus.ToString(),
                 Deadline = job.Deadline,
                 PostedAt = job.PostedAt,
-                Categories = job.Categories.Select(c => c.Category.Name).ToList(),
-                Tags = job.Tags.Select(t => t.Tag.Name).ToList(),
+                //Categories = job.Categories.Select(c => c.Category.Name).ToList(),
+                //Tags = job.Tags.Select(t => t.Tag.Name).ToList(),
+                Categories = job.Categories.Select(c => c.Category).ToList(),
+                Tags = job.Tags.Select(t => t.Tag).ToList(),
                 Applicants = job.Applications.Count
+            };
+        }
+    }
+
+    public class JobDto : JobSummaryDto {
+        public ClientSummaryDto Client { get; set; }
+        public List<Skill> Skills { get; set; } = new List<Skill>();
+        public List<string> Attachments { get; set; } = new List<string>();
+
+        public static JobDto FromJob(Job job) {
+            return new JobDto {
+                Id = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Budget = job.Budget,
+                JobStatus = job.JobStatus.ToString(),
+                Deadline = job.Deadline,
+                PostedAt = job.PostedAt,
+                Categories = job.Categories.Select(c => c.Category).ToList(),
+                Tags = job.Tags.Select(t => t.Tag).ToList(),
+                Applicants = job.Applications.Count,
+                Client = ClientSummaryDto.FromClient(job.Client),
+                Skills = job.Skills.Select(s => s.Skill).ToList(),
+                Attachments = job.Attachments.Select(a => a.Url).ToList()
             };
         }
     }

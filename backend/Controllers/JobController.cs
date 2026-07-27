@@ -14,18 +14,6 @@ namespace backend.Controllers {
             return Ok(jobs);
         }
 
-        //[HttpPost]
-        //[ProducesResponseType(typeof(JobSummaryDto), StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public async Task<ActionResult<JobSummaryDto>> CreateJob([FromBody] CreateJobDto dto) {
-        //    var job = await jobService.CreateJobAsync(dto);
-
-        //    return CreatedAtAction(
-        //        nameof(GetJobById),
-        //        new { id = job.Id },
-        //        job);
-        //}
-
         [HttpGet("{id:int}")]
         public async Task<ActionResult<JobSummaryDto>> GetJobById(int id) {
             var job = await jobService.GetJobByIdAsync(id);
@@ -34,6 +22,29 @@ namespace backend.Controllers {
                 return NotFound();
 
             return Ok(job);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> PostJob([FromBody] JobCreateDto dto) {
+            try {
+                // TODO: Get clientId from the authenticated user
+                await jobService.CreateJobAsync(dto, 2);
+                return Created();
+
+            } catch (ArgumentException ex) {
+                return BadRequest(new {
+                    message = ex.Message
+                });
+
+            } catch (Exception) {
+                // TODO: Log the exception
+                return StatusCode(StatusCodes.Status500InternalServerError, new {
+                    message = "An unexpected error occurred."
+                });
+            }
         }
     }
 }

@@ -15,10 +15,10 @@ namespace backend.Model {
 
         [Required(ErrorMessage = "Freelancer skills collection is required")]
         [JsonIgnore]
-        public required ICollection<FreelancerSkill> FreelancerSkills { get; set; }
+        public ICollection<FreelancerSkill> FreelancerSkills { get; set; } = new List<FreelancerSkill>();
 
         [Required(ErrorMessage = "Job skills collection is required")]
         [JsonIgnore]
-        public required ICollection<JobSkill> JobSkills { get; set; }
+        public ICollection<JobSkill> JobSkills { get; set; } = new List<JobSkill>();
     }
 }
