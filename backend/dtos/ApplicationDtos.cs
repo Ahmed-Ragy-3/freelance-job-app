@@ -1,13 +1,8 @@
-using backend.Model;
-using System.ComponentModel.DataAnnotations;
-
-namespace backend.Dtos
-{
+namespace backend.DTOs {
     // Sent by a Freelancer when applying to a job
-    public class ApplicationCreateDto
-    {
+    public class ApplicationCreateDto {
         public int JobId { get; set; }
-        public string CoverLetter { get; set; }
+        public string CoverLetter { get; set; } = string.Empty;
         public decimal Bid { get; set; }
         public int TimelineDays { get; set; }
     }
@@ -48,5 +43,9 @@ namespace backend.Dtos
         public int Timeline { get; set; }
         public AppStatus AppStatus { get; set; }
         public DateOnly JobDeadline { get; set; }
+      
+     public class ApplicationStatusUpdateDto {
+        public string AppStatus { get; set; } = string.Empty; // Draft, InProgress, Accepted, Rejected
+    }
     }
 }

@@ -1,9 +1,8 @@
-namespace backend.Dtos
-{
-    // ---- Skill ----
-    public class SkillCreateDto
-    {
-        public string Name { get; set; }
+using backend.Model;
+
+namespace backend.DTOs {
+    public class SkillCreateDto {
+        public string Name { get; set; } = string.Empty;
     }
 
     //public class SkillResponseDto
@@ -13,27 +12,35 @@ namespace backend.Dtos
     //    public int? ExperienceLevel { get; set; } // only filled when returned as part of a Freelancer's skill list
     //}
 
-    // ---- Category ----
-    public class CategoryCreateDto
-    {
-        public string Name { get; set; }
+    public class CategoryCreateDto {
+        public string Name { get; set; } = string.Empty;
     }
 
-    public class CategoryResponseDto
-    {
+    public class CategoryResponseDto {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
-    // ---- Tag ----
-    public class TagCreateDto
-    {
-        public string Name { get; set; }
-    }
-
-    public class TagResponseDto
-    {
+    public class CategorySummaryDto {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int NumberOfJobs { get; set; }
+
+        public static CategorySummaryDto FromCategory(Category category) {
+            return new CategorySummaryDto {
+                Id = category.Id,
+                Name = category.Name,
+                NumberOfJobs = category.JobCategories?.Count ?? 0
+            };
+        }
+    }
+
+    public class TagCreateDto {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class TagResponseDto {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
