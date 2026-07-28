@@ -1,5 +1,4 @@
-﻿using backend.model;
-using backend.Model;
+﻿using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend {
@@ -44,7 +43,7 @@ namespace backend {
                 entity.HasKey(jc => new { jc.JobId, jc.CategoryId });
 
                 entity.HasOne(jc => jc.Job)
-                      .WithMany(j => j.JobCategories)
+                      .WithMany(j => j.Categories)
                       .HasForeignKey(jc => jc.JobId)
                       .IsRequired();
 
@@ -88,6 +87,8 @@ namespace backend {
             });
 
             modelBuilder.Entity<Application>(entity => {
+                entity.HasKey(a => new { a.JobId, a.FreelancerId });
+
                 entity.HasOne(a => a.Job)
                       .WithMany()
                       .HasForeignKey(a => a.JobId)

@@ -25,6 +25,14 @@ namespace backend.Dtos
         public List<SkillResponseDto> Skills { get; set; } = new();
     }
 
+    public class FreelancerSummaryDto
+    {
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? ImageUrl { get; set; }
+        public decimal AvgRate { get; set; }
+    }
+
     public class UpdateFreelancerProfileDto
     {
         public string Bio { get; set; } = string.Empty;

@@ -1,4 +1,4 @@
-﻿namespace backend.model {
+﻿namespace backend.Model {
     public enum Role {
         Admin,
         Freelancer,
@@ -17,6 +17,7 @@
         Draft,
         In_Progress,
         Accepted,
-        Rejected
+        Rejected,
+        Withdrawn
     }
 }

@@ -1,5 +1,5 @@
 ﻿using backend.Dtos;
-using backend.model;
+using backend.Model;
 using backend.Repositories;
 
 namespace backend.Services
