@@ -95,38 +95,36 @@ namespace backend.Services {
             };
         }
 
+        private async Task CheckIdsAsync<TEntity>(
+                IQueryable<TEntity> dbSet, 
+                List<int> ids, 
+                string entityName, 
+                int minAllowed, 
+                int maxAllowed
+        ) where TEntity : class {
+
+            var distinctIds = ids.Distinct().ToList();
+
+            if (distinctIds.Count < minAllowed)
+                throw new ArgumentException($"At least {minAllowed} valid {entityName} IDs are required.");
+
+            if (distinctIds.Count > maxAllowed)
+                throw new ArgumentException($"A maximum of {maxAllowed} {entityName} IDs are allowed.");
+
+            var existingCount = await dbSet.CountAsync(e => distinctIds.Contains(EF.Property<int>(e, "Id")));
+
+            if (existingCount != distinctIds.Count)
+                throw new ArgumentException($"One or more {entityName} IDs are invalid.");
+        }
+
         public async Task CreateJobAsync(JobCreateDto newJob, int clientId) {
-            // Remove duplicate IDs
             var categoryIds = newJob.CategoryIds.Distinct().ToList();
             var skillIds = newJob.SkillIds.Distinct().ToList();
             var tagIds = newJob.TagIds.Distinct().ToList();
 
-            // Validate categories
-            var existingCategoryIds = await appDbContext.Categories
-                .Where(c => categoryIds.Contains(c.Id))
-                .Select(c => c.Id)
-                .ToListAsync();
-
-            if (existingCategoryIds.Count != categoryIds.Count)
-                throw new ArgumentException("One or more category IDs are invalid.");
-
-            // Validate skills
-            var existingSkillIds = await appDbContext.Skills
-                .Where(s => skillIds.Contains(s.Id))
-                .Select(s => s.Id)
-                .ToListAsync();
-
-            if (existingSkillIds.Count != skillIds.Count)
-                throw new ArgumentException("One or more skill IDs are invalid.");
-
-            // Validate tags
-            var existingTagIds = await appDbContext.Tags
-                .Where(t => tagIds.Contains(t.Id))
-                .Select(t => t.Id)
-                .ToListAsync();
-
-            if (existingTagIds.Count != tagIds.Count)
-                throw new ArgumentException("One or more tag IDs are invalid.");
+            await CheckIdsAsync(appDbContext.Categories, categoryIds, "category", 1, 3);
+            await CheckIdsAsync(appDbContext.Skills, skillIds, "skill", 1, 10);
+            await CheckIdsAsync(appDbContext.Tags, tagIds, "tag", 0, 10);
 
             var job = new Job {
                 Title = newJob.Title,
@@ -138,19 +136,56 @@ namespace backend.Services {
                 ClientId = clientId
             };
 
-            foreach (var categoryId in categoryIds) {
+            foreach (var categoryId in categoryIds)
                 job.Categories.Add(new JobCategory { CategoryId = categoryId });
-            }
 
-            foreach (var skillId in skillIds) {
+            foreach (var skillId in skillIds)
                 job.Skills.Add(new JobSkill { SkillId = skillId });
-            }
 
-            foreach (var tagId in tagIds) {
+            foreach (var tagId in tagIds)
                 job.Tags.Add(new JobTag { TagId = tagId });
-            }
 
             appDbContext.Jobs.Add(job);
+            await appDbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateJobAsync(int jobId, JobUpdateDto updatedJob, int clientId) {
+            var job = await appDbContext.Jobs
+                .Include(j => j.Categories)
+                .Include(j => j.Skills)
+                .Include(j => j.Tags)
+                .FirstOrDefaultAsync(j => j.Id == jobId);
+
+            if (job == null)
+                throw new KeyNotFoundException("Job not found.");
+
+            if (job.ClientId != clientId)
+                throw new ArgumentException($"You are not allowed to edit this job. {job.ClientId}");
+
+            var categoryIds = updatedJob.CategoryIds.Distinct().ToList();
+            var skillIds = updatedJob.SkillIds.Distinct().ToList();
+            var tagIds = updatedJob.TagIds.Distinct().ToList();
+
+            await CheckIdsAsync(appDbContext.Categories, categoryIds, "category", 1, 3);
+            await CheckIdsAsync(appDbContext.Skills, skillIds, "skill", 1, 10);
+            await CheckIdsAsync(appDbContext.Tags, tagIds, "tag", 0, 10);
+
+            job.Title = updatedJob.Title;
+            job.Description = updatedJob.Description;
+            job.Budget = (int)updatedJob.Budget;
+            job.Deadline = updatedJob.Deadline;
+
+            job.Categories.Clear();
+            foreach (var categoryId in categoryIds)
+                job.Categories.Add(new JobCategory { CategoryId = categoryId });
+
+            job.Skills.Clear();
+            foreach (var skillId in skillIds)
+                job.Skills.Add(new JobSkill { SkillId = skillId });
+
+            job.Tags.Clear();
+            foreach (var tagId in tagIds)
+                job.Tags.Add(new JobTag { TagId = tagId });
 
             await appDbContext.SaveChangesAsync();
         }

@@ -14,49 +14,50 @@ namespace backend.DTOs {
     }
 
     // Sent when a Client updates a job they own
-    public class JobUpdateDto {
-        public string Title { get; set; } = string.Empty;
-        public decimal Budget { get; set; }
-        public string Description { get; set; } = string.Empty; 
-        public DateOnly Deadline { get; set; }
+    public class JobUpdateDto : JobCreateDto {
         public string JobStatus { get; set; } = string.Empty;  // Pending, Approved, Rejected, InProgress, Finished, Passed, Delayed
-        public List<int> SkillIds { get; set; } = new List<int>();
-        public List<int> CategoryIds { get; set; } = new List<int>();
-        public List<int> TagIds { get; set; } = new List<int>();
     }
 
-    // Returned for job listings / job details page
-    public class JobResponseDto {
+    // Job summary DTO for client page
+    public class JobClientSummaryDto {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public decimal Budget { get; set; }
-        public string Description { get; set; } = string.Empty;
-        public DateOnly Deadline { get; set; }
         public string JobStatus { get; set; } = string.Empty;
         public DateTime PostedAt { get; set; }
-        public DateTime? AcceptedAt { get; set; }
-        public DateTime? FinishedAt { get; set; }
-        public ClientSummaryDto Client { get; set; }
-        public List<string> Skills { get; set; } = new List<string>();
-        public List<string> Categories { get; set; } = new List<string>();
-        public List<string> Tags { get; set; } = new List<string>();
-        public List<AttachmentResponseDto> Attachments { get; set; } = new List<AttachmentResponseDto>();
+        public int Applicants { get; set; }
+
+        public static JobClientSummaryDto FromJob(Job job) {
+            return new JobClientSummaryDto {
+                Id = job.Id,
+                Title = job.Title,
+                Budget = job.Budget,
+                JobStatus = job.JobStatus.ToString(),
+                PostedAt = job.PostedAt,
+                Applicants = job.Applications.Count
+            };
+        }
+
+        public static JobClientSummaryDto FromJobSummary(JobSummaryDto job) {
+            return new JobClientSummaryDto {
+                Id = job.Id,
+                Title = job.Title,
+                Budget = job.Budget,
+                JobStatus = job.JobStatus,
+                PostedAt = job.PostedAt,
+                Applicants = job.Applicants
+            };
+        }
     }
 
     // Lightweight version used inside ApplicationResponseDto / BookmarkResponseDto
-    public class JobSummaryDto {
-        public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
+    public class JobSummaryDto : JobClientSummaryDto {
         public string Description { get; set; } = string.Empty;
-        public decimal Budget { get; set; }
-        public string JobStatus { get; set; } = string.Empty;
         public DateOnly Deadline { get; set; }
-        public DateTime PostedAt { get; set; }
         public List<Category> Categories { get; set; } = new List<Category>();
         public List<Tag> Tags { get; set; } = new List<Tag>();
-        public int Applicants { get; set; }
 
-        public static JobSummaryDto FromJob(Job job) {
+        public static new JobSummaryDto FromJob(Job job) {
             return new JobSummaryDto {
                 Id = job.Id,
                 Title = job.Title,
@@ -65,8 +66,6 @@ namespace backend.DTOs {
                 JobStatus = job.JobStatus.ToString(),
                 Deadline = job.Deadline,
                 PostedAt = job.PostedAt,
-                //Categories = job.Categories.Select(c => c.Category.Name).ToList(),
-                //Tags = job.Tags.Select(t => t.Tag.Name).ToList(),
                 Categories = job.Categories.Select(c => c.Category).ToList(),
                 Tags = job.Tags.Select(t => t.Tag).ToList(),
                 Applicants = job.Applications.Count
@@ -74,12 +73,13 @@ namespace backend.DTOs {
         }
     }
 
+
     public class JobDto : JobSummaryDto {
         public ClientSummaryDto Client { get; set; }
         public List<Skill> Skills { get; set; } = new List<Skill>();
         public List<string> Attachments { get; set; } = new List<string>();
 
-        public static JobDto FromJob(Job job) {
+        public static new JobDto FromJob(Job job) {
             return new JobDto {
                 Id = job.Id,
                 Title = job.Title,
