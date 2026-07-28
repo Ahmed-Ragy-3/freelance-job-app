@@ -3,6 +3,7 @@ using backend;
 using backend.Data;
 using backend.FileUpload;
 using backend.Options;
+using backend.Repositories;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,11 @@ builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
 ));
 
+builder.Services.AddScoped<IFreelancerRepository, FreelancerRepository>();
+builder.Services.AddScoped<IFreelancerService, FreelancerService>();
+
+builder.Services.AddScoped<IFreelancerDashboardRepository, FreelancerDashboardRepository>();
+builder.Services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
 // ===== Auth setup =====
 builder.Services.AddScoped<JwtService>();
 

@@ -14,36 +14,30 @@ namespace backend.DTOs {
         public int ExperienceLevel { get; set; }
     }
 
-    // Returned when viewing a freelancer's public profile
-    public class FreelancerResponseDto {
+    public class FreelancerProfileDto
+    {
         public int UserId { get; set; }
-        public string Username { get; set; }
-        public string Bio { get; set; }
-        public string Link { get; set; }
-        public double AvgRate { get; set; } // computed field
-        public List<SkillResponseDto> Skills { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
+        public string? ImageUrl { get; set; }
+        public string Bio { get; set; } = string.Empty;
+        public string? Link { get; set; }
+        public decimal AvgRate { get; set; }
+        public List<SkillResponseDto> Skills { get; set; } = new();
     }
 
-    // Lightweight version used inside ApplicationResponseDto
-    public class FreelancerSummaryDto {
+    public class FreelancerSummaryDto
+    {
         public int UserId { get; set; }
-        public string Username { get; set; } = string.Empty;
-        public string Bio { get; set; } = string.Empty;
-        public double AvgRate { get; set; }
-        public string ImageUrl { get; set; } = string.Empty;
-        public int NumberOfJobs { get; set; }
-        public List<string> Skills { get; set; } = new List<string>();
+        public string? UserName { get; set; }
+        public string? ImageUrl { get; set; }
+        public decimal AvgRate { get; set; }
+    }
 
-        public static FreelancerSummaryDto FromFreelancer(Freelancer freelancer) {
-            return new FreelancerSummaryDto {
-                UserId = freelancer.UserId,
-                Username = freelancer.User.UserName,
-                Bio = freelancer.Bio,
-                AvgRate = freelancer.Applications.Any() ? freelancer.Applications.Average(a => a.Job.Review?.Rate ?? 0) : 0,
-                ImageUrl = freelancer.User.ImageUrl,
-                NumberOfJobs = freelancer.Applications.Count(),
-                Skills = freelancer.FreelancerSkills.Select(fs => fs.Skill.Name).ToList()
-            };
-        }
+    public class UpdateFreelancerProfileDto
+    {
+        public string Bio { get; set; } = string.Empty;
+        public string? Link { get; set; }
+        public List<FreelancerSkillCreateDto> Skills { get; set; } = new();
     }
 }
