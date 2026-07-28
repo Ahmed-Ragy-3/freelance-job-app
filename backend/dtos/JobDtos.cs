@@ -105,6 +105,7 @@ namespace backend.DTOs {
         public List<int>? SkillIds { get; set; }
         public decimal? MinBudget { get; set; }
         public decimal? MaxBudget { get; set; }
+        public int? ClientId { get; set; }
         public JobSortBy SortBy { get; set; } = JobSortBy.Newest;
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 9;

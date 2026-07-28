@@ -64,6 +64,11 @@ namespace backend.Services {
                 query = query.Where(j => j.Budget <= filter.MaxBudget.Value);
             }
 
+            // certain Client
+            if (filter.ClientId.HasValue) {
+                query = query.Where(j => j.ClientId == filter.ClientId.Value);
+            }
+
             // Sorting
             query = filter.SortBy switch {
                 JobSortBy.Newest => query.OrderByDescending(j => j.PostedAt),
