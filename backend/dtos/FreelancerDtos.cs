@@ -1,36 +1,34 @@
 namespace backend.Dtos
 {
-    // Sent when a Freelancer completes/updates their profile
-    public class FreelancerCreateDto
+    public class SkillResponseDto
     {
-        public string Bio { get; set; }
-        public string Link { get; set; }
-        public List<FreelancerSkillCreateDto> Skills { get; set; }
+        public int SkillId { get; set; }
+        public string SkillName { get; set; } = string.Empty;
+        public int ExperienceLevel { get; set; }
     }
 
-    // Sent as part of freelancer profile: which skills + experience level
     public class FreelancerSkillCreateDto
     {
         public int SkillId { get; set; }
         public int ExperienceLevel { get; set; }
     }
 
-    // Returned when viewing a freelancer's public profile
-    public class FreelancerResponseDto
+    public class FreelancerProfileDto
     {
         public int UserId { get; set; }
-        public string Username { get; set; }
-        public string Bio { get; set; }
-        public string Link { get; set; }
-        public double AvgRate { get; set; } // computed field
-        public List<SkillResponseDto> Skills { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
+        public string? ImageUrl { get; set; }
+        public string Bio { get; set; } = string.Empty;
+        public string? Link { get; set; }
+        public decimal AvgRate { get; set; }
+        public List<SkillResponseDto> Skills { get; set; } = new();
     }
 
-    // Lightweight version used inside ApplicationResponseDto
-    public class FreelancerSummaryDto
+    public class UpdateFreelancerProfileDto
     {
-        public int UserId { get; set; }
-        public string Username { get; set; }
-        public double AvgRate { get; set; }
+        public string Bio { get; set; } = string.Empty;
+        public string? Link { get; set; }
+        public List<FreelancerSkillCreateDto> Skills { get; set; } = new();
     }
 }

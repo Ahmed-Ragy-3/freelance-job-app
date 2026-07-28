@@ -1,6 +1,8 @@
 using backend;
 using backend.FileUpload;
 using backend.Options;
+using backend.Repositories;
+using backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -19,6 +21,12 @@ builder.Services.AddScoped<IFileUploadService, CloudinaryService>();
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
 ));
+
+builder.Services.AddScoped<IFreelancerRepository, FreelancerRepository>();
+builder.Services.AddScoped<IFreelancerService, FreelancerService>();
+
+builder.Services.AddScoped<IFreelancerDashboardRepository, FreelancerDashboardRepository>();
+builder.Services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
 
 var app = builder.Build();
 

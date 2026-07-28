@@ -6,12 +6,12 @@ namespace backend.Dtos
         public string Name { get; set; }
     }
 
-    public class SkillResponseDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int? ExperienceLevel { get; set; } // only filled when returned as part of a Freelancer's skill list
-    }
+    //public class SkillResponseDto
+    //{
+    //    public int Id { get; set; }
+    //    public string Name { get; set; }
+    //    public int? ExperienceLevel { get; set; } // only filled when returned as part of a Freelancer's skill list
+    //}
 
     // ---- Category ----
     public class CategoryCreateDto
