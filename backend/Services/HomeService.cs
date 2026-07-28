@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace backend.Services {
-    public class HomeStatisticsService(AppDbContext appDbContext, 
+    public class HomeService(AppDbContext appDbContext, 
                                        JobService jobService, 
                                        FreelancerService freelancerService, 
                                        ClientService clientService,
@@ -22,13 +22,13 @@ namespace backend.Services {
             return await appDbContext.Clients.CountAsync();
         }
 
-        public async Task<HomeStatsDto> GetHomeStatsAsync() {
+        public async Task<HomeDtos> GetHomeStatsAsync() {
             var topFreelancers = await freelancerService.GetTopNFreelancersAsync(4);
             var topClients = await clientService.GetTopNClientsAsync(4);
             var topJobs = await jobService.GetTopNJobsAsync(4);
             var topCategories = await categoryService.GetTopNCategoriesAsync(8);
 
-            return new HomeStatsDto {
+            return new HomeDtos {
                 totalJobs = await numberOfJobs(),
                 totalFreelancers = await numberOfFreelancers(),
                 totalClients = await numberOfClients(),
@@ -37,6 +37,19 @@ namespace backend.Services {
                 topJobs = topJobs,
                 topFreelancers = topFreelancers,
                 topClients = topClients
+            };
+        }
+
+        public async Task<GlobalSearchDtos> GetGlobalSearchStatsAsync(string searchTerm) {
+            var categories = await categoryService.SearchCategoriesAsync(searchTerm);
+            var jobs = await jobService.SearchJobsAsync(searchTerm);
+            var freelancers = await freelancerService.SearchFreelancersAsync(searchTerm);
+            var clients = await clientService.SearchClientsAsync(searchTerm);
+            return new GlobalSearchDtos {
+                Jobs = jobs,
+                Categories = categories,
+                Freelancers = freelancers,
+                Clients = clients
             };
         }
     }

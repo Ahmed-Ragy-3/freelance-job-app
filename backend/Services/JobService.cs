@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services {
     public class JobService(AppDbContext appDbContext) {
-        //public async 
         public async Task<List<JobSummaryDto>> GetTopNJobsAsync(int n) {
             var jobs = await appDbContext.Jobs
                 .OrderByDescending(j => j.PostedAt)
@@ -208,6 +207,14 @@ namespace backend.Services {
             appDbContext.Jobs.Remove(job);
 
             await appDbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<JobSummaryDto>> SearchJobsAsync(string searchTerm) {
+            var jobs = await appDbContext.Jobs
+                .Where(j => j.Title.Contains(searchTerm) || j.Description.Contains(searchTerm))
+                .ToListAsync();
+
+            return jobs.Select(JobSummaryDto.FromJob).ToList();
         }
     }
 

@@ -62,7 +62,7 @@ static class DependencyInjection {
         services.AddScoped<CategoryService>();
         services.AddScoped<ClientService>();
         services.AddScoped<FreelancerService>();
-        services.AddScoped<HomeStatisticsService>();
+        services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
 
         return services;
