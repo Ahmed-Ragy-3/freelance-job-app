@@ -69,7 +69,7 @@ namespace backend.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateJob([FromBody] JobUpdateDto dto) {
+        public async Task<ActionResult> UpdateJob(int id, [FromBody] JobUpdateDto dto) {
             try {
                 // TODO: Get clientId from authentication
                 await jobService.UpdateJobAsync(id, dto, 2);
@@ -81,6 +81,30 @@ namespace backend.Controllers {
             } catch (ArgumentException ex) {
                 return BadRequest(new { message = ex.Message });
             
+            } catch (Exception) {
+                return StatusCode(StatusCodes.Status500InternalServerError, new {
+                    message = "An unexpected error occurred."
+                });
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteJob(int id) {
+            try {
+                // TODO: Get clientId from authenticated user
+                await jobService.DeleteJobAsync(id, 2);
+                return NoContent();
+
+            } catch (KeyNotFoundException ex) {
+                return NotFound(new { message = ex.Message });
+
+            } catch (ArgumentException ex) {
+                return BadRequest(new { message = ex.Message });
+
             } catch (Exception) {
                 return StatusCode(StatusCodes.Status500InternalServerError, new {
                     message = "An unexpected error occurred."

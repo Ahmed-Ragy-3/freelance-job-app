@@ -189,6 +189,26 @@ namespace backend.Services {
 
             await appDbContext.SaveChangesAsync();
         }
+
+        public async Task DeleteJobAsync(int jobId, int clientId) {
+            var job = await appDbContext.Jobs
+                .FirstOrDefaultAsync(j => j.Id == jobId);
+
+            if (job == null)
+                throw new KeyNotFoundException("Job not found.");
+
+            if (job.ClientId != clientId)
+                throw new ArgumentException("You are not allowed to delete this job.");
+
+            // Optional business rule
+            //if (job.JobStatus == JobStatus.Approved) {
+            //    throw new ArgumentException("This job cannot be deleted.");
+            //}
+
+            appDbContext.Jobs.Remove(job);
+
+            await appDbContext.SaveChangesAsync();
+        }
     }
 
     public enum JobSortBy {
