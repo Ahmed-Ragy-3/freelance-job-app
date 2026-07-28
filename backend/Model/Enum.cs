@@ -17,6 +17,7 @@
         Draft,
         In_Progress,
         Accepted,
-        Rejected
+        Rejected,
+        Withdrawn
     }
 }

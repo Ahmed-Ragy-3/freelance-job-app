@@ -3,10 +3,16 @@ namespace backend.DTOs
     // Sent by frontend when someone signs up
     public class RegisterDto
     {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty; // "Freelancer", "Admin", or "Client"
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; } // "Freelancer" or "Client"
+
+        // Freelancer-only field (ignored if Role == "Client")
+        public string? Bio { get; set; }
+
+        // Client-only field (ignored if Role == "Freelancer")
+        public string? CompanyName { get; set; }
     }
 
     // Sent by frontend when someone logs in
@@ -29,10 +35,10 @@ namespace backend.DTOs
     public class UserResponseDto
     {
         public int Id { get; set; }
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
+        public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }
