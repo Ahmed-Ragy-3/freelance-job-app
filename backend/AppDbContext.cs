@@ -38,6 +38,11 @@ namespace backend {
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Role).HasConversion<string>();
                 entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasMany(u => u.Bookmarks)
+                      .WithOne(b => b.User)
+                      .HasForeignKey(b => b.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Notification>(entity => {
@@ -140,11 +145,14 @@ namespace backend {
                 entity.HasOne(b => b.Job)
                       .WithMany(j => j.Bookmarks)
                       .HasForeignKey(b => b.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
-                entity.HasOne(b => b.Freelancer)
-                      .WithMany(f => f.Bookmarks)
-                      .HasForeignKey(b => b.FreelancerId)
-                      .HasPrincipalKey(f => f.UserId)
+
+                entity.HasOne(b => b.User)
+                      .WithMany(u => u.Bookmarks)
+                      .HasForeignKey(b => b.UserId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasPrincipalKey(u => u.Id)
                       .IsRequired();
             });
 
