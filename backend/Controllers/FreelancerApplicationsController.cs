@@ -36,10 +36,11 @@ namespace backend.Controllers
         }
 
         /// <summary>
-        /// Submits a new job application.
+        /// Submits a new job application with optional portfolio/proposal attachments (PDFs or Images).
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<ApplicationResponseDto>> ApplyToJob([FromBody] ApplyJobDto dto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<ApplicationResponseDto>> ApplyToJob([FromForm] ApplyJobDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -54,17 +55,16 @@ namespace backend.Controllers
 
             try
             {
-                var createdApp = await _applicationService.ApplyToJobAsync(userId.Value, dto);
-
-                return CreatedAtAction(
-                    nameof(GetMyApplications),
-                    new { id = createdApp.JobId },
-                    createdApp
-                );
+                var result = await _applicationService.ApplyToJobAsync(userId.Value, dto);
+                return CreatedAtAction(nameof(GetMyApplications), new { id = result.ApplicationId }, result);
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {

@@ -36,5 +36,7 @@ namespace backend.Model {
         [Required(ErrorMessage = "Freelancer information is required")]
         [JsonIgnore]
         public required Freelancer Freelancer { get; set; }
+
+        public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
     }
 }

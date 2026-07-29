@@ -23,5 +23,9 @@ namespace backend.Model {
         public int JobId { get; set; }
 
         public Job Job { get; set; } = null!;
+
+        public int? ApplicationJobId { get; set; }
+        public int? ApplicationFreelancerId { get; set; }
+        public Application? Application { get; set; }
     } 
 }
