@@ -1,4 +1,3 @@
-using System.Text;
 using backend;
 using backend.Data;
 using backend.FileUpload;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,7 @@ builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("
 builder.Services.AddControllers();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -45,8 +46,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddScoped<IFileUploadService, CloudinaryService>();
-builder.Services.AddScoped<DatabaseSeeder>();
 
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -57,8 +56,6 @@ builder.Services.AddScoped<IFreelancerDashboardRepository, FreelancerDashboardRe
 builder.Services.AddScoped<IFreelancerApplicationRepository, FreelancerApplicationRepository>();
 
 // ===== Auth setup =====
-builder.Services.AddScoped<JwtService>();
-
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
@@ -111,6 +108,7 @@ if (app.Environment.IsDevelopment()) {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Freelance Job API v1");
     });
 }
+
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 
@@ -118,6 +116,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseRouting();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
 
@@ -129,6 +130,12 @@ static class DependencyInjection {
         services.AddScoped<FreelancerService>();
         services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
+        services.AddScoped<NotificationService>();
+        services.AddScoped<JwtService>();
+
+        services.AddScoped<IFileUploadService, CloudinaryService>();
+        services.AddScoped<DatabaseSeeder>();
+        services.AddSignalR();
 
         services.AddScoped<IFreelancerService, FreelancerService>();
         services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();

@@ -217,12 +217,4 @@ namespace backend.Services {
             return jobs.Select(JobSummaryDto.FromJob).ToList();
         }
     }
-
-    public enum JobSortBy {
-        Newest,
-        Oldest,
-        HighestBudget,
-        MostApplicants,
-        ClosestDeadline
-    }
 }

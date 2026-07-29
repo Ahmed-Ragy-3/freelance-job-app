@@ -256,7 +256,7 @@ namespace backend.Data {
             foreach (var user in users.OrderBy(_ => _random.Next()).Take(12)) {
                 _context.Notifications.Add(new Notification {
                     Title = $"New update for {GetRandomWord()}",
-                    Read = _random.Next(100) < 50,
+                    IsRead = _random.Next(100) < 50,
                     CreatedAt = DateTime.UtcNow.AddDays(-_random.Next(30)),
                     UserId = user.Id,
                     User = user
