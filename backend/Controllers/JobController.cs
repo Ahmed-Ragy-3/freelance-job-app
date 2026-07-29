@@ -1,4 +1,4 @@
-﻿using backend.dtos;
+using backend.dtos;
 using backend.DTOs;
 using backend.Services;
 using backend.Model;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.Controllers {
     [ApiController]
     [Route("api/jobs")]
-    public class JobController(JobService jobService) : ControllerBase {
+    public class JobController(JobService jobService, JobStatusService jobStatusService, AppDbContext appDbContext) : ControllerBase {
         [HttpGet]
         public async Task<ActionResult<PaginatedResponse<JobSummaryDto>>> GetJobs([FromQuery] JobFilterDto filter) {
             var jobs = await jobService.GetJobsAsync(filter);

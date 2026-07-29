@@ -1,4 +1,4 @@
-﻿using backend.DTOs;
+using backend.DTOs;
 using backend.FileUpload;
 using backend.Model;
 using backend.Repositories;
@@ -130,61 +130,19 @@ namespace backend.Services
                     Bid = a.Bid,
                     Timeline = a.Timeline,
                     AppStatus = a.AppStatus,
-                    JobDeadline = a.Job.Deadline,
                     Attachments = a.Attachments.Select(att => new AttachmentResponseDto
                     {
                         Id = att.Id,
                         Url = att.Url,
                         FileName = att.FileName,
                         Type = att.Type
-                    }).ToList()
+                    }).ToList(),
                     SubmittedAt = a.SubmittedAt
                 };
             }).ToList();
         }
 
-        public async Task<ApplicationResponseDto> ApplyToJobAsync(int freelancerId, ApplyJobDto dto)
-        {
-            var job = await _repository.GetJobByIdAsync(dto.JobId);
-            if (job == null)
-            {
-                throw new KeyNotFoundException($"Job with ID {dto.JobId} was not found.");
-            }
 
-            EnsureJobOpenForApplications(job);
-
-            var existing = await _repository.GetApplicationAsync(dto.JobId, freelancerId);
-            if (existing != null)
-            {
-                if (existing.AppStatus == AppStatus.Withdrawn)
-                {
-                    existing.CoverLetter = dto.CoverLetter;
-                    existing.Bid = dto.Bid;
-                    existing.Timeline = dto.Timeline;
-                    existing.AppStatus = AppStatus.In_Progress;
-                    await _repository.UpdateApplicationAsync(existing);
-                    return await MapToResponseDtoAsync(existing, job);
-                }
-
-                throw new InvalidOperationException("You have already submitted an active application for this job. Submit or delete your draft first.");
-            }
-
-            var newApplication = new Application
-            {
-                JobId = dto.JobId,
-                FreelancerId = freelancerId,
-                CoverLetter = dto.CoverLetter,
-                Bid = dto.Bid,
-                Timeline = dto.Timeline,
-                AppStatus = AppStatus.In_Progress,
-                Job = job,
-                Freelancer = null! // Handled by EF Core via FreelancerId
-            };
-
-            var createdApp = await _repository.CreateApplicationAsync(newApplication);
-
-            return await MapToResponseDtoAsync(createdApp, job);
-        }
 
         public async Task<ApplicationResponseDto> SaveApplicationDraftAsync(int freelancerId, SaveApplicationDraftDto dto)
         {
@@ -270,10 +228,7 @@ namespace backend.Services
                 throw new UnauthorizedAccessException("You are not authorized to withdraw this application.");
             }
 
-            if (application.AppStatus != AppStatus.In_Progress)
-            {
-                throw new InvalidOperationException($"Cannot withdraw application with status '{application.AppStatus}'.");
-            // Only applications pending review (In_Progress) can be withdrawn
+            // Only applications pending review (In_Progress) or draft can be withdrawn
             if (application.AppStatus is not (AppStatus.In_Progress or AppStatus.Draft))
             {
                 throw new InvalidOperationException($"Cannot withdraw application with status '{application.AppStatus}'. Only draft or pending applications can be withdrawn.");
