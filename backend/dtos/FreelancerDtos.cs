@@ -32,6 +32,22 @@ namespace backend.DTOs {
         public string? UserName { get; set; }
         public string? ImageUrl { get; set; }
         public decimal AvgRate { get; set; }
+
+        public static FreelancerSummaryDto FromFreelancer(Freelancer f) {
+            var reviews = f.Applications?
+                .Where(a => a.Job?.Review != null)
+                .Select(a => a.Job.Review!.Rate)
+                .ToList();
+
+            return new FreelancerSummaryDto {
+                UserId = f.UserId,
+                UserName = f.User?.UserName,
+                ImageUrl = f.User?.ImageUrl,
+                AvgRate = reviews != null && reviews.Any()
+                    ? Math.Round((decimal)reviews.Average(), 2)
+                    : 0
+            };
+        }
     }
 
     public class UpdateFreelancerProfileDto

@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
+using backend.Model;
+
 namespace backend.DTOs {
-    // Sent by a Freelancer when applying to a job
     public class ApplicationCreateDto {
         public int JobId { get; set; }
         public string CoverLetter { get; set; } = string.Empty;
@@ -7,10 +9,9 @@ namespace backend.DTOs {
         public int TimelineDays { get; set; }
     }
 
-    // Sent by a Client to accept/reject an application
     public class ApplicationStatusUpdateDto
     {
-        public string? AppStatus { get; set; } // Draft, InProgress, Accepted, Rejected
+        public string? AppStatus { get; set; }
     }
 
     public class ApplyJobDto
@@ -43,9 +44,5 @@ namespace backend.DTOs {
         public int Timeline { get; set; }
         public AppStatus AppStatus { get; set; }
         public DateOnly JobDeadline { get; set; }
-      
-     public class ApplicationStatusUpdateDto {
-        public string AppStatus { get; set; } = string.Empty; // Draft, InProgress, Accepted, Rejected
-    }
     }
 }

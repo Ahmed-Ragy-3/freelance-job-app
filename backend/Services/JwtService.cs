@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using backend.model;
+using backend.Model;
 using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Services

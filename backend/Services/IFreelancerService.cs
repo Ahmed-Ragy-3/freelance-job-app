@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.DTOs;
 
 namespace backend.Services
 {
@@ -6,5 +6,6 @@ namespace backend.Services
     {
         Task<FreelancerProfileDto?> GetProfileByUserIdAsync(int userId);
         Task<FreelancerProfileDto?> UpdateProfileAsync(int userId, UpdateFreelancerProfileDto dto);
+        Task<List<FreelancerSummaryDto>> GetTopNFreelancersAsync(int n);
     }
 }

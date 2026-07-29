@@ -1,16 +1,19 @@
-﻿using backend.Dtos;
+﻿using backend.DTOs;
 using backend.Model;
 using backend.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
     public class FreelancerService : IFreelancerService
     {
         private readonly IFreelancerRepository _freelancerRepository;
+        private readonly AppDbContext _appDbContext;
 
-        public FreelancerService(IFreelancerRepository freelancerRepository)
+        public FreelancerService(IFreelancerRepository freelancerRepository, AppDbContext appDbContext)
         {
             _freelancerRepository = freelancerRepository;
+            _appDbContext = appDbContext;
         }
 
         public async Task<FreelancerProfileDto?> GetProfileByUserIdAsync(int userId)
@@ -85,7 +88,7 @@ namespace backend.Services
         }
         
          public async Task<List<FreelancerSummaryDto>> GetTopNFreelancersAsync(int n) {
-            var freelancers = await appDbContext.Freelancers
+            var freelancers = await _appDbContext.Freelancers
                             .Include(f => f.User)
                             .Include(f => f.Applications)
                                 .ThenInclude(a => a.Job)

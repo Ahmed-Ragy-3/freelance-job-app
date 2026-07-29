@@ -57,6 +57,9 @@ builder.Services.AddScoped<IFreelancerService, FreelancerService>();
 
 builder.Services.AddScoped<IFreelancerDashboardRepository, FreelancerDashboardRepository>();
 builder.Services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
+
+builder.Services.AddScoped<IFreelancerApplicationRepository, FreelancerApplicationRepository>();
+builder.Services.AddScoped<IFreelancerApplicationService, FreelancerApplicationService>();
 // ===== Auth setup =====
 builder.Services.AddScoped<JwtService>();
 

@@ -1,5 +1,5 @@
-﻿using backend.Dtos;
-using backend.model;
+﻿using backend.DTOs;
+using backend.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
