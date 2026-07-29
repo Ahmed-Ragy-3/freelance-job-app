@@ -30,10 +30,16 @@ namespace backend.DTOs {
         [Required(ErrorMessage = "Timeline (in days) is required.")]
         [Range(1, 365, ErrorMessage = "Timeline must be between 1 and 365 days.")]
         public int Timeline { get; set; }
+
+        /// <summary>
+        /// Optional portfolio/proposal attachments (PDFs or Images, max 10MB per file).
+        /// </summary>
+        public List<IFormFile>? Attachments { get; set; }
     }
 
     public class ApplicationResponseDto
     {
+        public int ApplicationId { get; set; }
         public int JobId { get; set; }
         public string JobTitle { get; set; } = string.Empty;
         public int JobBudget { get; set; }
@@ -44,5 +50,6 @@ namespace backend.DTOs {
         public int Timeline { get; set; }
         public AppStatus AppStatus { get; set; }
         public DateOnly JobDeadline { get; set; }
+        public List<AttachmentResponseDto> Attachments { get; set; } = new();
     }
 }

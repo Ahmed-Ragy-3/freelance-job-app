@@ -1,14 +1,12 @@
-﻿using backend.Model;
+using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
 {
     public class AppDbContext : DbContext
     {
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-
         }
 
         public DbSet<Job> Jobs { get; set; }
@@ -29,12 +27,14 @@ namespace backend
         public DbSet<Skill> Skills { get; set; }
         public DbSet<FreelancerSkill> FreelancerSkills { get; set; }
         public DbSet<JobSkill> JobSkills { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-                                   .SelectMany(e => e.GetForeignKeys())) {
+                                   .SelectMany(e => e.GetForeignKeys()))
+            {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
@@ -85,12 +85,21 @@ namespace backend
                       .IsRequired();
             });
 
+            // Attachment configuration supporting both optional Job & Application links
             modelBuilder.Entity<Attachment>(entity => {
+                // Relationship to Job (Optional)
                 entity.HasOne(a => a.Job)
                       .WithMany(j => j.Attachments)
                       .HasForeignKey(a => a.JobId)
-                      .OnDelete(DeleteBehavior.Cascade)
-                      .IsRequired();
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
+
+                // Composite Foreign Key Relationship to Application
+                entity.HasOne(a => a.Application)
+                      .WithMany(app => app.Attachments)
+                      .HasForeignKey(a => new { a.ApplicationJobId, a.ApplicationFreelancerId })
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
             });
 
             modelBuilder.Entity<Review>(entity => {
@@ -167,7 +176,7 @@ namespace backend
                       .HasForeignKey(fs => fs.FreelancerId)
                       .HasPrincipalKey(f => f.UserId)
                       .IsRequired();
-                
+
                 entity.HasOne(fs => fs.Skill)
                       .WithMany(s => s.FreelancerSkills)
                       .HasForeignKey(fs => fs.SkillId)

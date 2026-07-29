@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace backend.Services {
     public class HomeService(AppDbContext appDbContext, 
                                        JobService jobService, 
-                                       FreelancerService freelancerService, 
-                                       ClientService clientService,
+                                       IFreelancerService freelancerService, 
+                                       IClientService clientService,
                                        CategoryService categoryService) {
 
         private async Task<int> numberOfJobs() {

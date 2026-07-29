@@ -21,7 +21,7 @@ namespace backend.DTOs {
         public int UserId { get; set; }
         public string CompanyName { get; set; } = string.Empty;
         public string CompanyDetails { get; set; } = string.Empty;
-        public string Logo { get; set; }
+        public string? Logo { get; set; }
 
         public static ClientSummaryDto FromClient(Client client) {
             return new ClientSummaryDto {
@@ -31,5 +31,23 @@ namespace backend.DTOs {
                 Logo = client.Logo
             };
         }
+    }
+
+    public class ClientProfileDto
+    {
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
+        public string? ImageUrl { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string? CompanyDetails { get; set; }
+        public string? Logo { get; set; }
+    }
+
+    public class UpdateClientProfileDto
+    {
+        public string CompanyName { get; set; } = string.Empty;
+        public string? CompanyDetails { get; set; }
+        public string? Logo { get; set; }
     }
 }
