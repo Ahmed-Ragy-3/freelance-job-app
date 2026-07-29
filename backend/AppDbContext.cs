@@ -1,4 +1,4 @@
-﻿using backend.Model;
+using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
@@ -91,14 +91,14 @@ namespace backend
                 entity.HasOne(a => a.Job)
                       .WithMany(j => j.Attachments)
                       .HasForeignKey(a => a.JobId)
-                      .OnDelete(DeleteBehavior.Cascade)
+                      .OnDelete(DeleteBehavior.Restrict)
                       .IsRequired(false);
 
                 // Composite Foreign Key Relationship to Application
                 entity.HasOne(a => a.Application)
                       .WithMany(app => app.Attachments)
                       .HasForeignKey(a => new { a.ApplicationJobId, a.ApplicationFreelancerId })
-                      .OnDelete(DeleteBehavior.Cascade)
+                      .OnDelete(DeleteBehavior.Restrict)
                       .IsRequired(false);
             });
 
