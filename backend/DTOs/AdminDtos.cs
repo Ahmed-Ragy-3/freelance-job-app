@@ -44,4 +44,15 @@ namespace backend.DTOs
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
     }
+
+    public class PendingJobAdminDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public int Budget { get; set; }
+        public DateOnly Deadline { get; set; }
+        public DateTime PostedAt { get; set; }
+        public string ClientCompanyName { get; set; } = string.Empty;
+        public JobStatus JobStatus { get; set; }
+    }
 }

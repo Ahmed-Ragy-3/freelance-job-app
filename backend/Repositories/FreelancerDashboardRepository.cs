@@ -20,30 +20,31 @@ namespace backend.Repositories
                 .CountAsync(a => a.FreelancerId == freelancerId && a.AppStatus == AppStatus.In_Progress);
         }
 
-        // Active Jobs: Accepted applications where the job is currently in progress
+        // Active Jobs: Accepted applications where the job is currently in progress or delayed
         public async Task<int> GetActiveJobsCountAsync(int freelancerId)
         {
             return await _context.Applications
                 .CountAsync(a => a.FreelancerId == freelancerId
                               && a.AppStatus == AppStatus.Accepted
-                              && a.Job.JobStatus == JobStatus.In_Progress);
+                              && (a.Job.JobStatus == JobStatus.In_Progress
+                                  || a.Job.JobStatus == JobStatus.Delayed));
         }
 
-        // Completed Jobs: Accepted applications where the job is finished
+        // Completed Jobs: Submitted applications where the job is finished
         public async Task<int> GetCompletedJobsCountAsync(int freelancerId)
         {
             return await _context.Applications
                 .CountAsync(a => a.FreelancerId == freelancerId
-                              && a.AppStatus == AppStatus.Accepted
+                              && a.AppStatus == AppStatus.JobDone
                               && a.Job.JobStatus == JobStatus.Finished);
         }
 
-        // Total Earnings: Sum of accepted bids on finished jobs
+        // Total Earnings: Sum of bids on finished jobs where freelancer submitted work
         public async Task<decimal> GetTotalEarningsAsync(int freelancerId)
         {
             return await _context.Applications
                 .Where(a => a.FreelancerId == freelancerId
-                         && a.AppStatus == AppStatus.Accepted
+                         && a.AppStatus == AppStatus.JobDone
                          && a.Job.JobStatus == JobStatus.Finished)
                 .SumAsync(a => (decimal)a.Bid);
         }
@@ -64,7 +65,7 @@ namespace backend.Repositories
         {
             var ratings = await _context.Applications
                 .Where(a => a.FreelancerId == freelancerId
-                         && a.AppStatus == AppStatus.Accepted
+                         && a.AppStatus == AppStatus.JobDone
                          && a.Job.Review != null)
                 .Select(a => (decimal?)a.Job.Review!.Rate)
                 .ToListAsync();
