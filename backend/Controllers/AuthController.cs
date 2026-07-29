@@ -89,6 +89,9 @@ namespace backend.Controllers
             if (!passwordValid)
                 return Unauthorized("Invalid email or password.");
 
+            if (user.IsSuspended)
+                return StatusCode(StatusCodes.Status403Forbidden, "Your account has been suspended.");
+
             var token = _jwtService.GenerateToken(user);
 
             return Ok(new AuthResponseDto

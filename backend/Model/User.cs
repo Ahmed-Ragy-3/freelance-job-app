@@ -23,6 +23,8 @@ namespace backend.Model {
         [EnumDataType(typeof(Role), ErrorMessage = "Invalid Role value provided.")]
         public Role Role { get; set; } = Role.Freelancer;
         [Required]
+        public bool IsSuspended { get; set; } = false;
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
