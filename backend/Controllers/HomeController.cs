@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers {
     [ApiController]
-    [Route("home")]
+    [Route("api/home")]
     public class HomeController(HomeService homeService) : ControllerBase {
 
         [HttpGet("stats")]

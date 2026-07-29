@@ -1,6 +1,8 @@
 ﻿using backend.DTOs;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using backend.Auth;
 
 namespace backend.Controllers
 {
@@ -34,12 +36,20 @@ namespace backend.Controllers
         /// Updates a freelancer profile by User ID.
         /// </summary>
         [HttpPut("{userId:int}")]
+        [Authorize(Roles = "Freelancer")]
         public async Task<ActionResult<FreelancerProfileDto>> UpdateProfile(int userId, [FromBody] UpdateFreelancerProfileDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            var tokenUserId = User.GetUserId();
+            if (!tokenUserId.HasValue)
+                return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+            if (tokenUserId.Value != userId)
+                return Forbid();
 
             try
             {

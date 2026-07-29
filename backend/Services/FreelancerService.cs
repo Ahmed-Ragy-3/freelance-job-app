@@ -103,7 +103,7 @@ namespace backend.Services
         }
 
         public async Task<List<FreelancerSummaryDto>> SearchFreelancersAsync(string searchTerm) {
-            var freelancers = await appDbContext.Freelancers
+            var freelancers = await _appDbContext.Freelancers
                 .Include(f => f.User)
                 .Where(f => f.User.UserName.Contains(searchTerm))
                 .ToListAsync();

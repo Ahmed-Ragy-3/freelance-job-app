@@ -51,7 +51,7 @@ namespace backend.Repositories
         public async Task<int> GetTotalBookmarksCountAsync(int freelancerId)
         {
             return await _context.Bookmarks
-                .CountAsync(b => b.FreelancerId == freelancerId);
+                .CountAsync(b => b.UserId == freelancerId);
         }
 
         public async Task<int> GetUnreadNotificationsCountAsync(int userId)

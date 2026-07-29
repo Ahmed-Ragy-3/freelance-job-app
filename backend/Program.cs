@@ -53,13 +53,9 @@ builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
 ));
 
 builder.Services.AddScoped<IFreelancerRepository, FreelancerRepository>();
-builder.Services.AddScoped<IFreelancerService, FreelancerService>();
-
 builder.Services.AddScoped<IFreelancerDashboardRepository, FreelancerDashboardRepository>();
-builder.Services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
-
 builder.Services.AddScoped<IFreelancerApplicationRepository, FreelancerApplicationRepository>();
-builder.Services.AddScoped<IFreelancerApplicationService, FreelancerApplicationService>();
+
 // ===== Auth setup =====
 builder.Services.AddScoped<JwtService>();
 
@@ -133,6 +129,10 @@ static class DependencyInjection {
         services.AddScoped<FreelancerService>();
         services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
+
+        services.AddScoped<IFreelancerService, FreelancerService>();
+        services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
+        services.AddScoped<IFreelancerApplicationService, FreelancerApplicationService>();
 
         return services;
     }
