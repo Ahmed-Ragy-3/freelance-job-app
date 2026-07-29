@@ -1,5 +1,6 @@
 using backend.Model;
 using backend.DTOs;
+using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace backend.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly JobStatusService _jobStatusService;
 
-        public AdminController(AppDbContext context)
+        public AdminController(AppDbContext context, JobStatusService jobStatusService)
         {
             _context = context;
+            _jobStatusService = jobStatusService;
         }
 
         [HttpGet("ping")]
@@ -209,78 +212,64 @@ namespace backend.Controllers
             return Ok(new { message = "Skill deleted successfully." });
         }
 
-        [HttpGet("applications/pending")]
-        public async Task<ActionResult<List<PendingApplicationAdminDto>>> GetPendingApplications()
+        [HttpGet("jobs/pending")]
+        public async Task<ActionResult<List<PendingJobAdminDto>>> GetPendingJobs()
         {
-            var pendingApplications = await _context.Applications
-                .Where(a => a.AppStatus == AppStatus.In_Progress)
-                .Include(a => a.Freelancer)
-                    .ThenInclude(f => f.User)
-                .Include(a => a.Job)
-                .Select(a => new PendingApplicationAdminDto
+            var pendingJobs = await _context.Jobs
+                .Where(j => j.JobStatus == JobStatus.Pending)
+                .OrderByDescending(j => j.PostedAt)
+                .Select(j => new PendingJobAdminDto
                 {
-                    JobId = a.JobId,
-                    FreelancerId = a.FreelancerId,
-                    FreelancerName = a.Freelancer.User.UserName,
-                    JobTitle = a.Job.Title,
+                    Id = j.Id,
+                    Title = j.Title,
+                    Budget = j.Budget,
+                    Deadline = j.Deadline,
+                    PostedAt = j.PostedAt,
+                    JobStatus = j.JobStatus,
                     ClientCompanyName = _context.Clients
-                        .Where(c => c.UserId == a.Job.ClientId)
+                        .Where(c => c.UserId == j.ClientId)
                         .Select(c => c.CompanyName)
-                        .FirstOrDefault() ?? string.Empty,
-                    CoverLetter = a.CoverLetter,
-                    Bid = a.Bid,
-                    Timeline = a.Timeline,
-                    AppStatus = a.AppStatus
+                        .FirstOrDefault() ?? string.Empty
                 })
-                .OrderBy(x => x.JobId)
-                .ThenBy(x => x.FreelancerId)
                 .ToListAsync();
 
-            return Ok(pendingApplications);
+            return Ok(pendingJobs);
         }
 
-        [HttpPut("applications/{jobId:int}/freelancers/{freelancerId:int}/accept")]
-        public async Task<IActionResult> AcceptPendingApplication(int jobId, int freelancerId)
+        [HttpPut("jobs/{jobId:int}/approve")]
+        public async Task<IActionResult> ApproveJob(int jobId)
         {
-            var application = await _context.Applications
-                .FirstOrDefaultAsync(a => a.JobId == jobId && a.FreelancerId == freelancerId);
-
-            if (application == null)
+            try
             {
-                return NotFound(new { message = "Application not found." });
+                await _jobStatusService.ApproveJobAsync(jobId);
+                return Ok(new { message = "Job approved successfully." });
             }
-
-            if (application.AppStatus != AppStatus.In_Progress)
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new { message = "Only pending applications can be accepted by admin." });
+                return NotFound(new { message = ex.Message });
             }
-
-            application.AppStatus = AppStatus.Accepted;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Application accepted successfully." });
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        [HttpDelete("applications/{jobId:int}/freelancers/{freelancerId:int}")]
-        public async Task<IActionResult> DeletePendingApplication(int jobId, int freelancerId)
+        [HttpPut("jobs/{jobId:int}/reject")]
+        public async Task<IActionResult> RejectJob(int jobId)
         {
-            var application = await _context.Applications
-                .FirstOrDefaultAsync(a => a.JobId == jobId && a.FreelancerId == freelancerId);
-
-            if (application == null)
+            try
             {
-                return NotFound(new { message = "Application not found." });
+                await _jobStatusService.RejectJobAsync(jobId);
+                return Ok(new { message = "Job rejected successfully." });
             }
-
-            if (application.AppStatus != AppStatus.In_Progress)
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new { message = "Only pending applications can be deleted by admin." });
+                return NotFound(new { message = ex.Message });
             }
-
-            application.AppStatus = AppStatus.Rejected;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Pending application rejected successfully." });
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

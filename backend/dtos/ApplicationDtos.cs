@@ -32,6 +32,21 @@ namespace backend.DTOs {
         public int Timeline { get; set; }
     }
 
+    public class SaveApplicationDraftDto
+    {
+        [Required(ErrorMessage = "Job ID is required.")]
+        public int JobId { get; set; }
+
+        [StringLength(3000, ErrorMessage = "Cover letter cannot exceed 3000 characters.")]
+        public string CoverLetter { get; set; } = string.Empty;
+
+        [Range(0, 10_000_000, ErrorMessage = "Bid amount cannot be negative.")]
+        public int Bid { get; set; }
+
+        [Range(0, 365, ErrorMessage = "Timeline cannot exceed 365 days.")]
+        public int Timeline { get; set; }
+    }
+
     public class ApplicationResponseDto
     {
         public int JobId { get; set; }
@@ -44,5 +59,16 @@ namespace backend.DTOs {
         public int Timeline { get; set; }
         public AppStatus AppStatus { get; set; }
         public DateOnly JobDeadline { get; set; }
+        public DateTime? SubmittedAt { get; set; }
+    }
+
+    public class JobApplicationClientDto
+    {
+        public int FreelancerId { get; set; }
+        public string FreelancerName { get; set; } = string.Empty;
+        public string CoverLetter { get; set; } = string.Empty;
+        public int Bid { get; set; }
+        public int Timeline { get; set; }
+        public AppStatus AppStatus { get; set; }
     }
 }

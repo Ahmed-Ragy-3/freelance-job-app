@@ -18,6 +18,7 @@
         In_Progress,
         Accepted,
         Rejected,
-        Withdrawn
+        Withdrawn,
+        JobDone
     }
 }
