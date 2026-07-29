@@ -1,8 +1,8 @@
 ﻿using backend.DTOs;
+using backend.Auth;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -22,7 +22,7 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<FreelancerDashboardDto>> GetDashboardOverview()
         {
-            int? userId = GetUserIdFromClaims();
+            int? userId = User.GetUserId();
             if (!userId.HasValue)
             {
                 return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
@@ -32,20 +32,5 @@ namespace backend.Controllers
             return Ok(dashboardData);
         }
 
-        /// Helper method to extract the UserId from JWT claims.
-        /// Configured for standard JWT ClaimTypes or custom 'id'/'userId' claims.
-        private int? GetUserIdFromClaims()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)
-                     ?? User.FindFirst("id")
-                     ?? User.FindFirst("userId");
-
-            if (claim != null && int.TryParse(claim.Value, out int userId))
-            {
-                return userId;
-            }
-
-            return null;
-        }
     }
 }

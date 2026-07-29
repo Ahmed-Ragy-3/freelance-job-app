@@ -1,9 +1,9 @@
 ﻿using backend.DTOs;
+using backend.Auth;
 using backend.Model;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -25,7 +25,7 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ApplicationResponseDto>>> GetMyApplications()
         {
-            int? userId = GetUserIdFromClaims();
+            int? userId = User.GetUserId();
             if (!userId.HasValue)
             {
                 return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
@@ -46,7 +46,7 @@ namespace backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            int? userId = GetUserIdFromClaims();
+            int? userId = User.GetUserId();
             if (!userId.HasValue)
             {
                 return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
@@ -78,7 +78,7 @@ namespace backend.Controllers
         [HttpPut("job/{jobId:int}/withdraw")]
         public async Task<IActionResult> WithdrawApplication(int jobId)
         {
-            int? userId = GetUserIdFromClaims();
+            int? userId = User.GetUserId();
             if (!userId.HasValue)
             {
                 return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
@@ -103,21 +103,5 @@ namespace backend.Controllers
             }
         }
 
-        /// <summary>
-        /// Helper method to extract the UserId from JWT claims.
-        /// </summary>
-        private int? GetUserIdFromClaims()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)
-                     ?? User.FindFirst("id")
-                     ?? User.FindFirst("userId");
-
-            if (claim != null && int.TryParse(claim.Value, out int userId))
-            {
-                return userId;
-            }
-
-            return null;
-        }
     }
 }
