@@ -2,6 +2,8 @@
 using backend.DTOs;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using backend.Auth;
 
 namespace backend.Controllers {
     [ApiController]
@@ -15,9 +17,13 @@ namespace backend.Controllers {
         }
 
         [HttpGet("client")]
+        [Authorize(Roles = "Client")]
         public async Task<ActionResult<PaginatedResponse<JobClientSummaryDto>>> GetClientJobs([FromQuery] JobFilterDto filter) {
-            // TODO: Get from authenticated user
-            filter.ClientId = 2;
+            var userId = User.GetUserId();
+            if (!userId.HasValue)
+                return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+            filter.ClientId = userId.Value;
 
             var jobs = await jobService.GetJobsAsync(filter);
 
@@ -42,13 +48,17 @@ namespace backend.Controllers {
         }
 
         [HttpPost]
+        [Authorize(Roles = "Client")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> PostJob([FromBody] JobCreateDto dto) {
             try {
-                // TODO: Get clientId from the authenticated user
-                await jobService.CreateJobAsync(dto, 2);
+                var userId = User.GetUserId();
+                if (!userId.HasValue)
+                    return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+                await jobService.CreateJobAsync(dto, userId.Value);
                 return Created();
 
             } catch (ArgumentException ex) {
@@ -57,7 +67,6 @@ namespace backend.Controllers {
                 });
 
             } catch (Exception) {
-                // TODO: Log the exception
                 return StatusCode(StatusCodes.Status500InternalServerError, new {
                     message = "An unexpected error occurred."
                 });
@@ -65,14 +74,18 @@ namespace backend.Controllers {
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Client")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateJob(int id, [FromBody] JobUpdateDto dto) {
             try {
-                // TODO: Get clientId from authentication
-                await jobService.UpdateJobAsync(id, dto, 2);
+                var userId = User.GetUserId();
+                if (!userId.HasValue)
+                    return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+                await jobService.UpdateJobAsync(id, dto, userId.Value);
                 return NoContent();
 
             } catch (KeyNotFoundException ex) {
@@ -89,14 +102,18 @@ namespace backend.Controllers {
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Client")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteJob(int id) {
             try {
-                // TODO: Get clientId from authenticated user
-                await jobService.DeleteJobAsync(id, 2);
+                var userId = User.GetUserId();
+                if (!userId.HasValue)
+                    return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+                await jobService.DeleteJobAsync(id, userId.Value);
                 return NoContent();
 
             } catch (KeyNotFoundException ex) {
