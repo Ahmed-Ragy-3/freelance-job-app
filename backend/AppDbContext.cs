@@ -33,10 +33,20 @@ namespace backend
         {
             base.OnModelCreating(modelBuilder);
 
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes()
+                                   .SelectMany(e => e.GetForeignKeys())) {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             modelBuilder.Entity<User>(entity => {
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Role).HasConversion<string>();
                 entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasMany(u => u.Bookmarks)
+                      .WithOne(b => b.User)
+                      .HasForeignKey(b => b.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Notification>(entity => {
@@ -49,11 +59,13 @@ namespace backend
                 entity.HasOne(jc => jc.Job)
                       .WithMany(j => j.Categories)
                       .HasForeignKey(jc => jc.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
 
                 entity.HasOne(jc => jc.Category)
                       .WithMany(c => c.JobCategories)
                       .HasForeignKey(jc => jc.CategoryId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
             });
 
@@ -63,11 +75,13 @@ namespace backend
                 entity.HasOne(jt => jt.Job)
                       .WithMany(j => j.Tags)
                       .HasForeignKey(jt => jt.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
 
                 entity.HasOne(jt => jt.Tag)
                       .WithMany(t => t.JobTags)
                       .HasForeignKey(jt => jt.TagId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
             });
 
@@ -75,6 +89,7 @@ namespace backend
                 entity.HasOne(a => a.Job)
                       .WithMany(j => j.Attachments)
                       .HasForeignKey(a => a.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
             });
 
@@ -82,6 +97,7 @@ namespace backend
                 entity.HasOne(r => r.Job)
                       .WithOne(j => j.Review)
                       .HasForeignKey<Review>(r => r.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
             });
 
@@ -108,7 +124,6 @@ namespace backend
                 entity.HasOne(j => j.Client)
                       .WithMany()
                       .HasForeignKey(j => j.ClientId)
-                      .OnDelete(DeleteBehavior.Restrict)
                       .IsRequired();
             });
 
@@ -118,6 +133,7 @@ namespace backend
                 entity.HasOne(a => a.Job)
                       .WithMany(j => j.Applications)
                       .HasForeignKey(a => a.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
 
                 entity.Property(a => a.AppStatus).HasConversion<string>();
@@ -133,11 +149,14 @@ namespace backend
                 entity.HasOne(b => b.Job)
                       .WithMany(j => j.Bookmarks)
                       .HasForeignKey(b => b.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
-                entity.HasOne(b => b.Freelancer)
-                      .WithMany(f => f.Bookmarks)
-                      .HasForeignKey(b => b.FreelancerId)
-                      .HasPrincipalKey(f => f.UserId)
+
+                entity.HasOne(b => b.User)
+                      .WithMany(u => u.Bookmarks)
+                      .HasForeignKey(b => b.UserId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasPrincipalKey(u => u.Id)
                       .IsRequired();
             });
 
@@ -148,6 +167,7 @@ namespace backend
                       .HasForeignKey(fs => fs.FreelancerId)
                       .HasPrincipalKey(f => f.UserId)
                       .IsRequired();
+                
                 entity.HasOne(fs => fs.Skill)
                       .WithMany(s => s.FreelancerSkills)
                       .HasForeignKey(fs => fs.SkillId)
@@ -159,18 +179,15 @@ namespace backend
                 entity.HasOne(js => js.Job)
                       .WithMany(j => j.Skills)
                       .HasForeignKey(js => js.JobId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
+
                 entity.HasOne(js => js.Skill)
                       .WithMany(s => s.JobSkills)
                       .HasForeignKey(js => js.SkillId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .IsRequired();
             });
-
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes()
-                                               .SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
         }
     }
 }

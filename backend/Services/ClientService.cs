@@ -12,5 +12,13 @@ namespace backend.Services {
 
             return clients.Select(ClientSummaryDto.FromClient).ToList();
         }
+
+        public async Task<List<ClientSummaryDto>> SearchClientsAsync(string searchTerm) {
+            var clients = await appDbContext.Clients
+                .Where(c => c.CompanyName.Contains(searchTerm))
+                .ToListAsync();
+
+            return clients.Select(ClientSummaryDto.FromClient).ToList();
+        }
     }
 }

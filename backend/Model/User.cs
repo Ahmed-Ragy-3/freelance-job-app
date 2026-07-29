@@ -26,6 +26,7 @@ namespace backend.Model {
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
         public Freelancer? Freelancer { get; set; }
         public Client? Client { get; set; }
     }

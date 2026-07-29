@@ -92,17 +92,17 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FreelancerId")
+                    b.Property<int>("JobId")
                         .HasColumnType("int");
 
-                    b.Property<int>("JobId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FreelancerId");
-
                     b.HasIndex("JobId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookmarks");
                 });
@@ -431,7 +431,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Applications")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Freelancer");
@@ -444,7 +444,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Attachments")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Job");
@@ -452,21 +452,21 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Model.Bookmark", b =>
                 {
-                    b.HasOne("backend.Model.Freelancer", "Freelancer")
-                        .WithMany("Bookmarks")
-                        .HasForeignKey("FreelancerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Bookmarks")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Freelancer");
+                    b.HasOne("backend.Model.User", "User")
+                        .WithMany("Bookmarks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Job");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("backend.Model.Client", b =>
@@ -520,8 +520,7 @@ namespace backend.Migrations
 
                     b.HasOne("backend.Model.Client", null)
                         .WithMany("Jobs")
-                        .HasForeignKey("ClientUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ClientUserId");
 
                     b.Navigation("Client");
                 });
@@ -531,13 +530,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Category", "Category")
                         .WithMany("JobCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Categories")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -550,13 +549,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Skills")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Skill", "Skill")
                         .WithMany("JobSkills")
                         .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Job");
@@ -569,13 +568,13 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Job", "Job")
                         .WithMany("Tags")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Model.Tag", "Tag")
                         .WithMany("JobTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Job");
@@ -599,7 +598,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Model.Job", "Job")
                         .WithOne("Review")
                         .HasForeignKey("backend.Model.Review", "JobId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Job");
@@ -618,8 +617,6 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Model.Freelancer", b =>
                 {
                     b.Navigation("Applications");
-
-                    b.Navigation("Bookmarks");
 
                     b.Navigation("FreelancerSkills");
                 });
@@ -655,6 +652,8 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Model.User", b =>
                 {
+                    b.Navigation("Bookmarks");
+
                     b.Navigation("Client");
 
                     b.Navigation("Freelancer");

@@ -101,5 +101,14 @@ namespace backend.Services
 
             return freelancers.Select(FreelancerSummaryDto.FromFreelancer).ToList();
         }
+
+        public async Task<List<FreelancerSummaryDto>> SearchFreelancersAsync(string searchTerm) {
+            var freelancers = await appDbContext.Freelancers
+                .Include(f => f.User)
+                .Where(f => f.User.UserName.Contains(searchTerm))
+                .ToListAsync();
+
+            return freelancers.Select(FreelancerSummaryDto.FromFreelancer).ToList();
+        }
     }
 }

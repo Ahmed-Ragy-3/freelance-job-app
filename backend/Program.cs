@@ -127,10 +127,11 @@ app.Run();
 
 static class DependencyInjection {
     public static IServiceCollection AddServices(this IServiceCollection services) {
+        services.AddScoped<BookmarkService>();
         services.AddScoped<CategoryService>();
         services.AddScoped<ClientService>();
         services.AddScoped<FreelancerService>();
-        services.AddScoped<HomeStatisticsService>();
+        services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
 
         return services;
