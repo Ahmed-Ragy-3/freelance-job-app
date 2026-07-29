@@ -7,7 +7,7 @@ using backend.Auth;
 
 namespace backend.Controllers {
     [ApiController]
-    [Route("/jobs")]
+    [Route("api/jobs")]
     public class JobController(JobService jobService) : ControllerBase {
         [HttpGet]
         public async Task<ActionResult<PaginatedResponse<JobSummaryDto>>> GetJobs([FromQuery] JobFilterDto filter) {

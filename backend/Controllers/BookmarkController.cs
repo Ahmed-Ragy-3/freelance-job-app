@@ -7,7 +7,7 @@ using backend.Auth;
 
 namespace backend.Controllers {
     [ApiController]
-    [Route("bookmark")]
+    [Route("api/bookmark")]
     [Authorize]
     public class BookmarkController(BookmarkService bookmarkService) : ControllerBase {
 
