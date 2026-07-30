@@ -270,9 +270,6 @@ namespace backend.Services
                 throw new UnauthorizedAccessException("You are not authorized to withdraw this application.");
             }
 
-            if (application.AppStatus != AppStatus.In_Progress)
-            {
-                throw new InvalidOperationException($"Cannot withdraw application with status '{application.AppStatus}'.");
             // Only applications pending review (In_Progress) can be withdrawn
             if (application.AppStatus is not (AppStatus.In_Progress or AppStatus.Draft))
             {
