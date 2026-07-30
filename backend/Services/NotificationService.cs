@@ -1,11 +1,13 @@
-﻿using backend.Model;
+using backend.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 using backend.NotificationBuilders;
 
 namespace backend.Services;
 
 
+[Authorize]
 public class NotificationHub : Hub {
 
 }

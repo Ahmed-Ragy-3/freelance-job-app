@@ -4,7 +4,9 @@ using backend.FileUpload;
 using backend.Options;
 using backend.Repositories;
 using backend.Services;
+using backend.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +20,17 @@ builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("
 builder.Services.AddControllers();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://localhost:5173", "https://localhost:3000", "https://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -77,6 +90,24 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            // If the request is for our hub...
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/notificationHub"))
+            {
+                // Read the token out of the query string
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization(options =>
@@ -112,13 +143,14 @@ if (app.Environment.IsDevelopment()) {
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 
-//app.UseRouting();
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-//app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
 
@@ -136,6 +168,7 @@ static class DependencyInjection {
         services.AddScoped<IFileUploadService, CloudinaryService>();
         services.AddScoped<DatabaseSeeder>();
         services.AddSignalR();
+        services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
         services.AddScoped<IFreelancerService, FreelancerService>();
         services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
