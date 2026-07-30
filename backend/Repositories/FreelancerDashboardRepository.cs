@@ -63,9 +63,11 @@ namespace backend.Repositories
 
         public async Task<decimal> GetAverageRatingAsync(int freelancerId)
         {
-            var ratings = await _context.Reviews
-                .Where(r => r.RevieweeId == freelancerId)
-                .Select(r => (decimal?)r.Rate)
+            var ratings = await _context.Applications
+                .Where(a => a.FreelancerId == freelancerId
+                         && a.AppStatus == AppStatus.JobDone
+                         && a.Job.Review != null)
+                .Select(a => (decimal?)a.Job.Review!.Rate)
                 .ToListAsync();
 
             if (!ratings.Any() || ratings.All(r => r == null))
