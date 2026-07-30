@@ -143,7 +143,7 @@ function ApplyPage() {
     if (!existing) return;
     if (!window.confirm("Withdraw your application? This cannot be undone.")) return;
     try {
-      await applicationService.withdraw(existing.id);
+      await applicationService.withdraw(existing.jobId || id);
       toast.success("Application withdrawn");
       refetch();
       reset({ coverLetter: "", bid: undefined, timeline: 14 });

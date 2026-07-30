@@ -123,17 +123,19 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope()) {
-//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
 
-//    if (app.Environment.IsDevelopment()) {
-//        dbContext.Database.EnsureDeleted();
-//    }
+    if (app.Environment.IsDevelopment())
+    {
+        dbContext.Database.EnsureDeleted();
+    }
 
-//    dbContext.Database.EnsureCreated();
-//    await seeder.SeedAsync();
-//}
+    dbContext.Database.EnsureCreated();
+    await seeder.SeedAsync();
+}
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();

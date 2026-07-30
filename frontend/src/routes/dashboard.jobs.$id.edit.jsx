@@ -72,10 +72,10 @@ function EditJob() {
         <MultiSelect options={cats} value={categoryIds} onChange={setCategoryIds} getKey={(c) => c.id} getLabel={(c) => c.name} />
       </Field>
       <Field label="Tags" hint="Select one or more">
-        <MultiSelect options={allTags} value={selectedTags} onChange={setSelectedTags} getKey={(t) => t} getLabel={(t) => t} />
+        <MultiSelect options={allTags} value={selectedTags} onChange={setSelectedTags} getKey={(t) => (typeof t === "object" ? t.id : t)} getLabel={(t) => (typeof t === "object" ? t.name : t)} />
       </Field>
       <Field label="Required skills" hint="Select one or more">
-        <MultiSelect options={allSkills} value={selectedSkills} onChange={setSelectedSkills} getKey={(s) => s} getLabel={(s) => s} />
+        <MultiSelect options={allSkills} value={selectedSkills} onChange={setSelectedSkills} getKey={(s) => (typeof s === "object" ? s.id : s)} getLabel={(s) => (typeof s === "object" ? s.name : s)} />
       </Field>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={() => navigate({ to: "/dashboard/jobs" })}>Cancel</Button>
