@@ -9,6 +9,10 @@ export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
   timeout: 15000,
+  // ASP.NET Core binds List<T> from repeated keys: SkillIds=1&SkillIds=2
+  paramsSerializer: {
+    indexes: null,
+  },
 });
 
 // Attach auth token from localStorage (populated by AuthContext on login).
@@ -17,6 +21,14 @@ api.interceptors.request.use((config) => {
     const token = localStorage.getItem("mp_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  // Let the browser set multipart boundary for FormData uploads.
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    if (config.headers && typeof config.headers.delete === "function") {
+      config.headers.delete("Content-Type");
+    } else if (config.headers) {
+      delete config.headers["Content-Type"];
     }
   }
   return config;
@@ -44,4 +56,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

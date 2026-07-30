@@ -6,6 +6,7 @@ import { MapPin, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function FreelancerCard({ f }) {
+  const skills = (f.skills || []).map((s) => (typeof s === "string" ? s : s?.name || s?.skillName)).filter(Boolean);
   return (
     <motion.div whileHover={{ y: -3 }} className="rounded-2xl border border-border bg-card p-5 shadow-soft transition-shadow hover:shadow-elevated">
       <div className="flex items-start gap-4">
@@ -21,7 +22,7 @@ export function FreelancerCard({ f }) {
       </div>
       <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{f.bio}</p>
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {f.skills.slice(0, 3).map((s) => <Badge key={s} variant="primary">{s}</Badge>)}
+        {skills.slice(0, 3).map((s) => <Badge key={s} variant="primary">{s}</Badge>)}
       </div>
       <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-sm">
         <span className="inline-flex items-center gap-1 text-muted-foreground"><Briefcase size={13} />{f.completed} jobs</span>

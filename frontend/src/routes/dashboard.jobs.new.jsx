@@ -37,6 +37,7 @@ function NewJob() {
   const onSubmit = async (data) => {
     setTouched(true);
     if (!categoryIds.length) { toast.error("Select at least one category"); return; }
+    if (!selectedSkills.length) { toast.error("Select at least one skill"); return; }
     await jobService.create({
       ...data,
       clientId: user.id,
@@ -44,7 +45,9 @@ function NewJob() {
       categoryIds,
       categoryNames: cats.filter((c) => categoryIds.includes(c.id)).map((c) => c.name),
       requiredSkills: selectedSkills,
+      skillIds: selectedSkills,
       tags: selectedTags,
+      tagIds: selectedTags,
     });
     toast.success("Job submitted for admin review");
     navigate({ to: "/dashboard/jobs" });

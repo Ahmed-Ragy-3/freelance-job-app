@@ -52,7 +52,9 @@ function EditJob() {
       categoryIds,
       categoryNames: cats.filter((c) => categoryIds.includes(c.id)).map((c) => c.name),
       requiredSkills: selectedSkills,
+      skillIds: selectedSkills,
       tags: selectedTags,
+      tagIds: selectedTags,
     });
     toast.success("Job updated");
     navigate({ to: "/dashboard/jobs" });

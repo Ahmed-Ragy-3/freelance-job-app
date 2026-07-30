@@ -31,7 +31,10 @@ function JobsList() {
     jobService.list({ ...filters, page, pageSize: 9 }).then(({ items, total }) => { setItems(items); setTotal(total); setLoading(false); });
   }, [filters, page]);
 
-  const toggleSkill = (s) => setFilters((f) => ({ ...f, skills: f.skills.includes(s) ? f.skills.filter((x) => x !== s) : [...f.skills, s] }));
+  const toggleSkill = (skillId) => setFilters((f) => ({
+    ...f,
+    skills: f.skills.includes(skillId) ? f.skills.filter((x) => x !== skillId) : [...f.skills, skillId],
+  }));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -82,9 +85,13 @@ function JobsList() {
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Skills</label>
                 <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto">
-                  {allSkills.slice(0, 16).map((s) => (
-                    <button key={s} type="button" onClick={() => { toggleSkill(s); setPage(1); }} className={"rounded-full border px-2.5 py-1 text-xs " + (filters.skills.includes(s) ? "border-primary bg-primary/10 text-primary" : "border-border")}>{s}</button>
-                  ))}
+                  {allSkills.slice(0, 16).map((s) => {
+                    const id = typeof s === "object" ? s.id : s;
+                    const label = typeof s === "object" ? s.name : s;
+                    return (
+                      <button key={id} type="button" onClick={() => { toggleSkill(id); setPage(1); }} className={"rounded-full border px-2.5 py-1 text-xs " + (filters.skills.includes(id) ? "border-primary bg-primary/10 text-primary" : "border-border")}>{label}</button>
+                    );
+                  })}
                 </div>
               </div>
               <Button variant="outline" className="w-full" onClick={() => { setFilters({ search: "", category: "", status: "", sort: "newest", minBudget: 0, maxBudget: 100000, skills: [] }); setPage(1); }}>Reset</Button>

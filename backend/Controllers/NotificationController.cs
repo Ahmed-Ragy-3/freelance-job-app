@@ -1,11 +1,13 @@
 ﻿using backend.Auth;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [ApiController]
 [Route("api/notifications")]
+[Authorize]
 public class NotificationController(NotificationService notificationService) : ControllerBase {
     private int GetUserId() {
         var userId = User.GetUserId();

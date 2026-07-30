@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 
 export function JobCard({ job, view = "grid", onBookmark, bookmarked }) {
   const statusVariant = job.status === "Open" ? "success" : job.status === "In Progress" ? "info" : "default";
-  const categories = job.categoryNames || [];
+  const categories = job.categoryNames || (job.categories || []).map((c) => (typeof c === "string" ? c : c.name)).filter(Boolean);
+  const tags = (job.tags || []).map((t) => (typeof t === "string" ? t : t.name)).filter(Boolean);
   return (
     <motion.article
       whileHover={{ y: -3 }}
@@ -30,7 +31,7 @@ export function JobCard({ job, view = "grid", onBookmark, bookmarked }) {
       </div>
       <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{job.description}</p>
       <div className="mt-4 flex flex-wrap gap-1.5">
-        {job.tags?.map((t) => <Badge key={t} variant="primary">{t}</Badge>)}
+        {tags.map((t) => <Badge key={t} variant="primary">{t}</Badge>)}
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
         <div className="text-lg font-bold text-foreground">{formatMoney(job.budget)}</div>

@@ -9,13 +9,22 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   vite: {
     server: {
+      // 8080 is often blocked on Windows (Hyper-V / excluded port ranges → EACCES).
+      port: 5173,
+      strictPort: false,
+      host: "localhost",
       proxy: {
-        '/api': {
-          target: 'http://localhost:5140',
-          changeOrigin: true
-        }
-      }
-    }
+        "/api": {
+          target: "http://localhost:5140",
+          changeOrigin: true,
+        },
+        "/notificationHub": {
+          target: "http://localhost:5140",
+          changeOrigin: true,
+          ws: true,
+        },
+      },
+    },
   },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).

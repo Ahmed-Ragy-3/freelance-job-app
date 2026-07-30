@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace backend.FileUpload {
     [ApiController]
-    [Route("files")]
+    [Route("api/files")]
     [Authorize]
     public class FilesController : ControllerBase {
         private readonly IFileUploadService _uploadService;

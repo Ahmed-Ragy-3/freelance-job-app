@@ -75,6 +75,7 @@ namespace backend.Controllers
 
         /// Retrieves a freelancer profile by User ID.
         [HttpGet("freelancer/{userId:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<FreelancerProfileDto>> GetFreelancerProfile(int userId)
         {
             var profile = await _freelancerService.GetProfileByUserIdAsync(userId);
@@ -121,6 +122,7 @@ namespace backend.Controllers
 
         /// Retrieves a client profile by User ID.
         [HttpGet("client/{userId:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ClientProfileDto>> GetClientProfile(int userId)
         {
             var profile = await _clientService.GetProfileByUserIdAsync(userId);

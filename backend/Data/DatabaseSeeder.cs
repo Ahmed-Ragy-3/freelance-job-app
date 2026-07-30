@@ -389,7 +389,7 @@ namespace backend.Data
             {
                 UserName = userName,
                 Email = email,
-                Password = "Password123!",
+                Password = BCrypt.Net.BCrypt.HashPassword("Password123!"),
                 Role = role,
                 ImageUrl = $"https://example.com/images/{userName}.jpg"
             };

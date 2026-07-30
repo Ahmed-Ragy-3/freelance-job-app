@@ -20,6 +20,7 @@ namespace backend.Controllers {
         }
         
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<PaginatedResponse<JobSummaryDto>>> GetJobs([FromQuery] JobFilterDto filter) {
             var jobs = await jobService.GetJobsAsync(filter);
             return Ok(jobs);
@@ -43,6 +44,7 @@ namespace backend.Controllers {
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<JobSummaryDto>> GetJobById(int id) {
             var job = await jobService.GetJobByIdAsync(id);
 

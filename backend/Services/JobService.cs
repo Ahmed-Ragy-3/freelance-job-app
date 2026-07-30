@@ -83,19 +83,21 @@ namespace backend.Services {
                 _ => query.OrderBy(j => j.Deadline)
             };
 
+            var totalCount = await query.CountAsync();
+
             var jobs = await query
-                        .Skip((filter.Page - 1) * filter.PageSize)
                         .Include(j => j.Categories)
                             .ThenInclude(jc => jc.Category)
                         .Include(j => j.Tags)
                             .ThenInclude(jt => jt.Tag)
                         .Include(j => j.Applications)
+                        .Skip((filter.Page - 1) * filter.PageSize)
                         .Take(filter.PageSize)
                         .ToListAsync();
 
             return new PaginatedResponse<JobSummaryDto> {
                 Items = jobs.Select(JobSummaryDto.FromJob).ToList(),
-                TotalCount = jobs.Count(),
+                TotalCount = totalCount,
             };
         }
 

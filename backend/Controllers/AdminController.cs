@@ -14,11 +14,13 @@ namespace backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly JobStatusService _jobStatusService;
+        private readonly CategoryService _categoryService;
 
-        public AdminController(AppDbContext context, JobStatusService jobStatusService)
+        public AdminController(AppDbContext context, JobStatusService jobStatusService, CategoryService categoryService)
         {
             _context = context;
             _jobStatusService = jobStatusService;
+            _categoryService = categoryService;
         }
 
         [HttpGet("ping")]
@@ -269,6 +271,146 @@ namespace backend.Controllers
             catch (InvalidOperationException ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("jobs")]
+        public async Task<IActionResult> GetAllJobs()
+        {
+            var jobs = await _context.Jobs
+                .Include(j => j.Applications)
+                .Include(j => j.Categories).ThenInclude(jc => jc.Category)
+                .Include(j => j.Tags).ThenInclude(jt => jt.Tag)
+                .OrderByDescending(j => j.PostedAt)
+                .ToListAsync();
+
+            return Ok(jobs.Select(JobSummaryDto.FromJob).ToList());
+        }
+
+        [HttpDelete("jobs/{jobId:int}")]
+        public async Task<IActionResult> DeleteJob(int jobId)
+        {
+            var job = await _context.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+            if (job == null)
+                return NotFound(new { message = $"Job with ID {jobId} was not found." });
+
+            _context.Jobs.Remove(job);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Job deleted successfully." });
+        }
+
+        [HttpDelete("users/{userId:int}")]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return NotFound(new { message = $"User with ID {userId} was not found." });
+
+            if (user.Role == Role.Admin)
+                return BadRequest(new { message = "Admin accounts cannot be deleted." });
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "User deleted successfully." });
+        }
+
+        [HttpPut("tags/{tagId:int}")]
+        public async Task<IActionResult> UpdateTag(int tagId, [FromBody] CreateNamedEntityDto dto)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == tagId);
+            if (tag == null)
+                return NotFound(new { message = $"Tag with ID {tagId} was not found." });
+
+            var normalizedName = dto.Name.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedName))
+                return BadRequest(new { message = "Tag name is required." });
+
+            var exists = await _context.Tags.AnyAsync(t => t.Name == normalizedName && t.Id != tagId);
+            if (exists)
+                return BadRequest(new { message = $"Tag '{normalizedName}' already exists." });
+
+            tag.Name = normalizedName;
+            await _context.SaveChangesAsync();
+            return Ok(new TagResponseDto { Id = tag.Id, Name = tag.Name });
+        }
+
+        [HttpPut("skills/{skillId:int}")]
+        public async Task<IActionResult> UpdateSkill(int skillId, [FromBody] CreateNamedEntityDto dto)
+        {
+            var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == skillId);
+            if (skill == null)
+                return NotFound(new { message = $"Skill with ID {skillId} was not found." });
+
+            var normalizedName = dto.Name.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedName))
+                return BadRequest(new { message = "Skill name is required." });
+
+            var exists = await _context.Skills.AnyAsync(s => s.Name == normalizedName && s.Id != skillId);
+            if (exists)
+                return BadRequest(new { message = $"Skill '{normalizedName}' already exists." });
+
+            skill.Name = normalizedName;
+            await _context.SaveChangesAsync();
+            return Ok(new { id = skill.Id, name = skill.Name });
+        }
+
+        [HttpGet("categories")]
+        public async Task<ActionResult<List<CategorySummaryDto>>> GetCategories()
+        {
+            return Ok(await _categoryService.GetAllCategoriesAsync());
+        }
+
+        [HttpPost("categories")]
+        public async Task<IActionResult> CreateCategory([FromBody] CreateNamedEntityDto dto)
+        {
+            try
+            {
+                var created = await _categoryService.CreateAsync(dto.Name);
+                return Ok(created);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("categories/{categoryId:int}")]
+        public async Task<IActionResult> UpdateCategory(int categoryId, [FromBody] CreateNamedEntityDto dto)
+        {
+            try
+            {
+                var updated = await _categoryService.UpdateAsync(categoryId, dto.Name);
+                return Ok(updated);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("categories/{categoryId:int}")]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
+        {
+            try
+            {
+                await _categoryService.DeleteAsync(categoryId);
+                return Ok(new { message = "Category deleted successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
         }
     }

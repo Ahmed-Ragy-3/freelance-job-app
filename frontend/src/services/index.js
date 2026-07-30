@@ -16,12 +16,59 @@ function parseJobStatusEnum(val) {
   return map[val] || val || "Pending";
 }
 
+/** Map backend JobStatus → UI labels used across the app. */
+function toUiJobStatus(status) {
+  const map = {
+    Approved: "Open",
+    In_Progress: "In Progress",
+    Finished: "Completed",
+    Passed: "Closed",
+    Rejected: "Rejected",
+    Pending: "Pending",
+    Delayed: "Delayed",
+  };
+  return map[status] || status;
+}
+
+/** Map UI status labels → backend JobStatus for filters/updates. */
+function toApiJobStatus(status) {
+  if (!status) return undefined;
+  const map = {
+    Open: "Approved",
+    "In Progress": "In_Progress",
+    Completed: "Finished",
+    Closed: "Passed",
+    Rejected: "Rejected",
+    Pending: "Pending",
+    Delayed: "Delayed",
+    Approved: "Approved",
+    In_Progress: "In_Progress",
+    Finished: "Finished",
+    Passed: "Passed",
+  };
+  return map[status] || status;
+}
+
 function parseAppStatusEnum(val) {
   const map = {
     0: "Draft", 1: "In_Progress", 2: "Accepted",
     3: "Rejected", 4: "Withdrawn", 5: "JobDone"
   };
   return map[val] || val || "Submitted";
+}
+
+function toIds(arr) {
+  return (arr || [])
+    .map((x) => (typeof x === "object" && x != null ? Number(x.id ?? x.skillId ?? x.tagId) : Number(x)))
+    .filter((n) => !Number.isNaN(n));
+}
+
+function normalizeNamed(items) {
+  return (items || []).map((item) => {
+    if (typeof item === "string") return item;
+    const nested = item.category || item.tag || item.skill || item;
+    return nested?.name || nested?.Name || String(nested);
+  });
 }
 
 function normalizeUser(u) {
@@ -42,10 +89,29 @@ function normalizeUser(u) {
 
 function normalizeJob(j) {
   if (!j) return null;
-  const statusStr = typeof j.jobStatus === "string" ? j.jobStatus : parseJobStatusEnum(j.jobStatus);
-  const categories = j.categories ? j.categories.map((c) => (c.category ? c.category : c)) : [];
-  const tags = j.tags ? j.tags.map((t) => (t.tag ? t.tag : t)) : [];
-  const skills = j.skills ? j.skills.map((s) => (s.skill ? s.skill : s)) : [];
+  const rawStatus = typeof j.jobStatus === "string" ? j.jobStatus : parseJobStatusEnum(j.jobStatus);
+  const statusStr = toUiJobStatus(rawStatus);
+  const categories = j.categories
+    ? j.categories.map((c) => (c.category ? c.category : c)).map((c) => ({
+        id: c.id,
+        name: c.name || c.Name || "",
+      }))
+    : [];
+  const tags = j.tags
+    ? j.tags.map((t) => (t.tag ? t.tag : t)).map((t) => ({
+        id: t.id,
+        name: t.name || t.Name || (typeof t === "string" ? t : ""),
+      }))
+    : [];
+  const skills = j.skills
+    ? j.skills.map((s) => (s.skill ? s.skill : s)).map((s) => ({
+        id: s.id,
+        name: s.name || s.Name || (typeof s === "string" ? s : ""),
+      }))
+    : [];
+  const categoryNames = categories.map((c) => c.name).filter(Boolean);
+  const tagNames = tags.map((t) => t.name).filter(Boolean);
+  const skillNames = skills.map((s) => s.name).filter(Boolean);
 
   return {
     id: j.id,
@@ -60,11 +126,14 @@ function normalizeJob(j) {
     proposals: j.applicants || j.proposals || 0,
     applicants: j.applicants || 0,
     categories,
+    categoryNames,
     categoryId: categories[0]?.id || j.categoryId,
-    categoryIds: categories.map((c) => c.id),
-    tags,
+    categoryIds: categories.map((c) => c.id).filter(Boolean),
+    tags: tagNames.length ? tagNames : tags,
+    tagIds: tags.map((t) => t.id).filter(Boolean),
     skills,
-    requiredSkills: skills.map((s) => s.name || s) || j.requiredSkills || [],
+    requiredSkills: skillNames.length ? skillNames : (j.requiredSkills || []),
+    skillIds: skills.map((s) => s.id).filter(Boolean),
     client: j.client
       ? {
           userId: j.client.userId,
@@ -165,7 +234,7 @@ export const jobService = {
     const params = {
       Search: search || undefined,
       CategoryId: category ? Number(category) : undefined,
-      Status: status || undefined,
+      Status: toApiJobStatus(status) || undefined,
       MinBudget: minBudget || undefined,
       MaxBudget: maxBudget && maxBudget !== Infinity ? maxBudget : undefined,
       ClientId: clientId || undefined,
@@ -173,8 +242,9 @@ export const jobService = {
       Page: page,
       PageSize: pageSize,
     };
-    if (skills && skills.length > 0) {
-      params.SkillIds = skills.map(Number).filter((n) => !isNaN(n));
+    const skillIds = toIds(skills);
+    if (skillIds.length > 0) {
+      params.SkillIds = skillIds;
     }
 
     const res = await api.get("/jobs", { params });
@@ -204,9 +274,9 @@ export const jobService = {
       description: data.description,
       budget: Number(data.budget),
       deadline: data.deadline,
-      categoryIds: data.categoryIds || (data.categoryId ? [Number(data.categoryId)] : []),
-      skillIds: (data.skillIds || data.requiredSkills || []).map(Number).filter((n) => !isNaN(n)),
-      tagIds: (data.tagIds || []).map(Number).filter((n) => !isNaN(n)),
+      categoryIds: toIds(data.categoryIds || (data.categoryId ? [data.categoryId] : [])),
+      skillIds: toIds(data.skillIds || data.requiredSkills || data.skills || []),
+      tagIds: toIds(data.tagIds || data.tags || []),
     };
     const res = await api.post("/jobs", payload);
     return res.data;
@@ -218,10 +288,10 @@ export const jobService = {
       description: patch.description,
       budget: Number(patch.budget),
       deadline: patch.deadline,
-      categoryIds: patch.categoryIds || (patch.categoryId ? [Number(patch.categoryId)] : []),
-      skillIds: (patch.skillIds || patch.requiredSkills || []).map(Number).filter((n) => !isNaN(n)),
-      tagIds: (patch.tagIds || []).map(Number).filter((n) => !isNaN(n)),
-      jobStatus: patch.jobStatus || patch.status || "Pending",
+      categoryIds: toIds(patch.categoryIds || (patch.categoryId ? [patch.categoryId] : [])),
+      skillIds: toIds(patch.skillIds || patch.requiredSkills || patch.skills || []),
+      tagIds: toIds(patch.tagIds || patch.tags || []),
+      jobStatus: toApiJobStatus(patch.jobStatus || patch.status) || "Pending",
     };
     const res = await api.put(`/jobs/${id}`, payload);
     return res.data;
@@ -309,9 +379,7 @@ export const applicationService = {
     if (data.attachments && data.attachments.length) {
       data.attachments.forEach((file) => formData.append("attachments", file));
     }
-    const res = await api.post("/freelancer/applications", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.post("/freelancer/applications", formData);
     return normalizeApplication(res.data);
   },
 
@@ -488,7 +556,7 @@ export const reviewService = {
     try {
       const jobs = await jobService.byClient(clientId);
       return jobs
-        .filter((j) => j.status === "Finished" || j.status === "Completed")
+        .filter((j) => j.status === "Completed" || j.status === "Finished")
         .map((j) => ({
           job: j,
           freelancerId: j.freelancerId,
@@ -553,7 +621,7 @@ export const notificationService = {
 
   async getUnreadCount() {
     const res = await api.get("/notifications/unread-count");
-    return res.data?.unreadCount || 0;
+    return res.data?.unreadCount ?? res.data?.UnreadCount ?? 0;
   },
 
   async markRead(id) {
@@ -605,12 +673,12 @@ export const dashboardService = {
 
   async clientStats(userId) {
     const jobs = await jobService.byClient(userId);
-    const openJobs = jobs.filter((j) => j.status === "Approved" || j.status === "In_Progress").length;
+    const openJobs = jobs.filter((j) => j.status === "Open" || j.status === "In Progress").length;
     return {
       totalJobs: jobs.length,
       openJobs,
       applications: jobs.reduce((sum, j) => sum + (j.proposals || 0), 0),
-      spend: jobs.filter((j) => j.status === "Finished").reduce((sum, j) => sum + j.budget, 0),
+      spend: jobs.filter((j) => j.status === "Completed").reduce((sum, j) => sum + j.budget, 0),
       chart: [],
     };
   },
@@ -630,9 +698,19 @@ export const adminService = {
     }));
   },
 
+  async deleteUser(userId) {
+    const res = await api.delete(`/admin/users/${userId}`);
+    return res.data;
+  },
+
   async setSuspension(userId, isSuspended) {
     const res = await api.put(`/admin/users/${userId}/suspension`, { isSuspended });
     return res.data;
+  },
+
+  async jobs() {
+    const res = await api.get("/admin/jobs");
+    return (res.data || []).map(normalizeJob);
   },
 
   async pendingJobs() {
@@ -648,6 +726,11 @@ export const adminService = {
     return jobService.reject(id);
   },
 
+  async deleteJob(id) {
+    await api.delete(`/admin/jobs/${id}`);
+    return { ok: true };
+  },
+
   async tags() {
     const res = await api.get("/admin/tags");
     return res.data || [];
@@ -655,6 +738,11 @@ export const adminService = {
 
   async createTag(name) {
     const res = await api.post("/admin/tags", { name });
+    return res.data;
+  },
+
+  async updateTag(id, name) {
+    const res = await api.put(`/admin/tags/${id}`, { name });
     return res.data;
   },
 
@@ -673,8 +761,33 @@ export const adminService = {
     return res.data;
   },
 
+  async updateSkill(id, name) {
+    const res = await api.put(`/admin/skills/${id}`, { name });
+    return res.data;
+  },
+
   async deleteSkill(id) {
     await api.delete(`/admin/skills/${id}`);
+    return { ok: true };
+  },
+
+  async categories() {
+    const res = await api.get("/admin/categories");
+    return res.data || [];
+  },
+
+  async createCategory(name) {
+    const res = await api.post("/admin/categories", { name });
+    return res.data;
+  },
+
+  async updateCategory(id, name) {
+    const res = await api.put(`/admin/categories/${id}`, { name });
+    return res.data;
+  },
+
+  async deleteCategory(id) {
+    await api.delete(`/admin/categories/${id}`);
     return { ok: true };
   },
 };
@@ -703,41 +816,75 @@ export const userService = {
 export const staticData = {
   async stats() {
     const res = await api.get("/home/stats");
-    return res.data;
+    const d = res.data || {};
+    return {
+      ...d,
+      freelancers: d.totalFreelancers ?? d.freelancers ?? 0,
+      clients: d.totalClients ?? d.clients ?? 0,
+      jobsPosted: d.totalJobs ?? d.jobsPosted ?? 0,
+      paidOut: d.paidOut ?? d.totalRevenue ?? 0,
+      topCategories: d.topCategories || [],
+      topJobs: d.topJobs || [],
+      topFreelancers: d.topFreelancers || [],
+      topClients: d.topClients || [],
+    };
   },
   async categories() {
     try {
-      const stats = await this.stats();
-      return stats.topCategories || [];
+      const res = await api.get("/home/categories");
+      return (res.data || []).map((c) => ({
+        id: c.id,
+        name: c.name,
+        jobs: c.numberOfJobs ?? c.jobs ?? 0,
+      }));
+    } catch {
+      try {
+        const stats = await this.stats();
+        return (stats.topCategories || []).map((c) => ({
+          id: c.id,
+          name: c.name,
+          jobs: c.numberOfJobs ?? c.jobs ?? 0,
+        }));
+      } catch {
+        return [];
+      }
+    }
+  },
+  async skills() {
+    try {
+      const res = await api.get("/home/skills");
+      return res.data || [];
     } catch {
       return [];
     }
   },
-  async skills() {
-    return adminService.skills();
-  },
   async tags() {
-    return adminService.tags();
+    try {
+      const res = await api.get("/home/tags");
+      return res.data || [];
+    } catch {
+      return [];
+    }
   },
   async topFreelancers() {
     const stats = await this.stats();
-    return (stats.topFreelancers || []).map(f => ({
+    return (stats.topFreelancers || []).map((f) => ({
       ...f,
       id: f.userId,
       name: f.userName,
       avatar: f.imageUrl,
       rating: f.avgRate,
-      skills: f.skills || [],
+      skills: normalizeNamed(f.skills),
       title: f.title || "Freelancer",
       location: f.location || "Remote",
       bio: f.bio || "",
       completed: f.completed || 0,
-      averageRate: f.avgRate || 0
+      averageRate: f.avgRate || 0,
     }));
   },
   async topClients() {
     const stats = await this.stats();
-    return (stats.topClients || []).map(c => ({
+    return (stats.topClients || []).map((c) => ({
       ...c,
       userId: c.userId,
       companyName: c.companyName,
@@ -747,7 +894,7 @@ export const staticData = {
       rating: c.rating || 5,
       reviews: c.reviews || 0,
       openJobs: c.openJobs || 0,
-      responseTime: c.responseTime || "1 day"
+      responseTime: c.responseTime || "1 day",
     }));
   },
   async featuredJobs() {
@@ -761,22 +908,22 @@ export const staticData = {
         text: "Workly has completely transformed how we build our team. The quality of freelancers is unmatched.",
         name: "Sarah Jenkins",
         role: "CTO at TechCorp",
-        avatar: ""
+        avatar: "",
       },
       {
         id: 2,
         text: "I found an amazing designer within 2 hours of posting my job. Highly recommended!",
         name: "Michael Chen",
         role: "Founder at StartupX",
-        avatar: ""
+        avatar: "",
       },
       {
         id: 3,
         text: "The platform is intuitive and the payment protection gives us great peace of mind.",
         name: "Emily Rodriguez",
         role: "Marketing Director",
-        avatar: ""
-      }
+        avatar: "",
+      },
     ];
   },
 };

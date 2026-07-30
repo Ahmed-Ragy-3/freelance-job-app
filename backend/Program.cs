@@ -27,7 +27,14 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://localhost:5140", "http://localhost:5140", "https://localhost:8080", "http://localhost:8080", "http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://localhost:5173", "https://localhost:3000", "https://localhost:4200")
+        policy.WithOrigins(
+                "https://localhost:5140", "http://localhost:5140",
+                "https://localhost:8080", "http://localhost:8080",
+                "http://localhost:5173", "https://localhost:5173",
+                "http://localhost:3000", "https://localhost:3000",
+                "http://localhost:4200", "https://localhost:4200",
+                "http://127.0.0.1:5173", "http://127.0.0.1:8080",
+                "http://127.0.0.1:3000", "http://127.0.0.1:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -146,7 +153,11 @@ if (app.Environment.IsDevelopment()) {
 }
 
 // Configure the HTTP request pipeline.
-app.UseHttpsRedirection();
+// Skip HTTPS redirection in Development so the Vite proxy (http://localhost:5140) is not redirected away.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors("AllowFrontend");
 
@@ -155,7 +166,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<NotificationHub>("/notificationHub").RequireCors("AllowFrontend");
 
 app.Run();
 
