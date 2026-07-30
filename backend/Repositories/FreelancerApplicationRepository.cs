@@ -26,6 +26,7 @@ namespace backend.Repositories
         {
             return await _context.Applications
                 .Include(a => a.Job)
+                .Include(a => a.Attachments)
                 .FirstOrDefaultAsync(a => a.JobId == jobId && a.FreelancerId == freelancerId);
         }
 
@@ -53,7 +54,12 @@ namespace backend.Repositories
 
         public async Task UpdateApplicationAsync(Application application)
         {
-            _context.Applications.Update(application);
+            var entry = _context.Entry(application);
+            if (entry.State == EntityState.Detached)
+            {
+                _context.Applications.Update(application);
+            }
+
             await _context.SaveChangesAsync();
         }
     }

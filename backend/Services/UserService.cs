@@ -40,7 +40,7 @@ namespace backend.Services
             }
 
             user.UserName = dto.UserName;
-            user.ImageUrl = dto.ImageUrl;
+            user.ImageUrl = string.IsNullOrWhiteSpace(dto.ImageUrl) ? user.ImageUrl : dto.ImageUrl;
 
             await _userRepository.UpdateUserAsync(user);
 

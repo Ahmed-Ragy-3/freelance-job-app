@@ -19,6 +19,9 @@ namespace backend.Data
                 await SeedUsersAsync();
             }
 
+            // Upgrade any leftover plaintext seed passwords so login works with BCrypt.
+            await EnsurePasswordsHashedAsync();
+
             var users = await _context.Users.ToListAsync();
             if (!await _context.Clients.AnyAsync())
             {
@@ -381,6 +384,25 @@ namespace backend.Data
             await _context.Tags.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
             return entities;
+        }
+
+        private async Task EnsurePasswordsHashedAsync()
+        {
+            var users = await _context.Users.ToListAsync();
+            var changed = false;
+
+            foreach (var user in users)
+            {
+                // BCrypt hashes start with $2a$, $2b$, or $2y$
+                if (string.IsNullOrEmpty(user.Password) || user.Password.StartsWith("$2"))
+                    continue;
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                changed = true;
+            }
+
+            if (changed)
+                await _context.SaveChangesAsync();
         }
 
         private User CreateUser(string userName, Role role, string email)

@@ -14,37 +14,26 @@ namespace backend.Services
 
         public async Task<FreelancerDashboardDto> GetDashboardOverviewAsync(int userId)
         {
-            // Execute queries concurrently for optimal dashboard loading time
-            var activeAppsTask = _dashboardRepository.GetActiveApplicationsCountAsync(userId);
-            var activeJobsTask = _dashboardRepository.GetActiveJobsCountAsync(userId);
-            var completedJobsTask = _dashboardRepository.GetCompletedJobsCountAsync(userId);
-            var earningsTask = _dashboardRepository.GetTotalEarningsAsync(userId);
-            var bookmarksTask = _dashboardRepository.GetTotalBookmarksCountAsync(userId);
-            var unreadNotificationsTask = _dashboardRepository.GetUnreadNotificationsCountAsync(userId);
-            var avgRatingTask = _dashboardRepository.GetAverageRatingAsync(userId);
-            var recentAppsTask = _dashboardRepository.GetRecentApplicationsAsync(userId, 5);
-
-            await Task.WhenAll(
-                activeAppsTask,
-                activeJobsTask,
-                completedJobsTask,
-                earningsTask,
-                bookmarksTask,
-                unreadNotificationsTask,
-                avgRatingTask,
-                recentAppsTask
-            );
+            // DbContext is not thread-safe — run queries sequentially on the shared scoped instance.
+            var activeApps = await _dashboardRepository.GetActiveApplicationsCountAsync(userId);
+            var activeJobs = await _dashboardRepository.GetActiveJobsCountAsync(userId);
+            var completedJobs = await _dashboardRepository.GetCompletedJobsCountAsync(userId);
+            var earnings = await _dashboardRepository.GetTotalEarningsAsync(userId);
+            var bookmarks = await _dashboardRepository.GetTotalBookmarksCountAsync(userId);
+            var unreadNotifications = await _dashboardRepository.GetUnreadNotificationsCountAsync(userId);
+            var avgRating = await _dashboardRepository.GetAverageRatingAsync(userId);
+            var recentApps = await _dashboardRepository.GetRecentApplicationsAsync(userId, 5);
 
             return new FreelancerDashboardDto
             {
-                ActiveApplicationsCount = await activeAppsTask,
-                ActiveJobsCount = await activeJobsTask,
-                CompletedJobsCount = await completedJobsTask,
-                TotalEarnings = await earningsTask,
-                TotalBookmarksCount = await bookmarksTask,
-                UnreadNotificationsCount = await unreadNotificationsTask,
-                AvgRating = await avgRatingTask,
-                RecentApplications = await recentAppsTask
+                ActiveApplicationsCount = activeApps,
+                ActiveJobsCount = activeJobs,
+                CompletedJobsCount = completedJobs,
+                TotalEarnings = earnings,
+                TotalBookmarksCount = bookmarks,
+                UnreadNotificationsCount = unreadNotifications,
+                AvgRating = avgRating,
+                RecentApplications = recentApps
             };
         }
     }

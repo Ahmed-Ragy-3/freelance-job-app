@@ -63,7 +63,6 @@ namespace backend.DTOs
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters.")]
         public string UserName { get; set; } = string.Empty;
 
-        [Url(ErrorMessage = "Invalid image URL format.")]
         [StringLength(500, ErrorMessage = "Image URL is too long.")]
         public string? ImageUrl { get; set; }
     }

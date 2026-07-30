@@ -63,19 +63,15 @@ namespace backend.Repositories
 
         public async Task<decimal> GetAverageRatingAsync(int freelancerId)
         {
-            var ratings = await _context.Applications
-                .Where(a => a.FreelancerId == freelancerId
-                         && a.AppStatus == AppStatus.JobDone
-                         && a.Job.Reviews != null)
-                .Select(a => (decimal?)a.Job.Reviews.First().Rate)
+            var ratings = await _context.Reviews
+                .Where(r => r.RevieweeId == freelancerId)
+                .Select(r => (decimal)r.Rate)
                 .ToListAsync();
 
-            if (!ratings.Any() || ratings.All(r => r == null))
-            {
+            if (ratings.Count == 0)
                 return 0.0m;
-            }
 
-            return Math.Round((decimal)ratings.Average()!, 2);
+            return Math.Round(ratings.Average(), 2);
         }
 
         public async Task<List<RecentApplicationDto>> GetRecentApplicationsAsync(int freelancerId, int count = 5)

@@ -15,11 +15,11 @@ export default defineConfig({
       host: "localhost",
       proxy: {
         "/api": {
-          target: "http://localhost:5140",
+          target: "http://127.0.0.1:5140",
           changeOrigin: true,
         },
         "/notificationHub": {
-          target: "http://localhost:5140",
+          target: "http://127.0.0.1:5140",
           changeOrigin: true,
           ws: true,
         },

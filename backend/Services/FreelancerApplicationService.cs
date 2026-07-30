@@ -36,68 +36,92 @@ namespace backend.Services {
                 throw new InvalidOperationException("This job is not currently open for applications.");
             }
 
-            bool alreadyApplied = await _repository.HasAlreadyAppliedAsync(freelancerId, dto.JobId);
-            if (alreadyApplied) {
+            // PK is (JobId, FreelancerId) — after withdraw the row still exists, so re-apply must UPDATE it.
+            var existing = await _repository.GetApplicationAsync(dto.JobId, freelancerId);
+            if (existing != null && existing.AppStatus is not (AppStatus.Withdrawn or AppStatus.Draft)) {
                 throw new InvalidOperationException("You have already submitted an active application for this job.");
             }
 
-            var application = new Application {
-                JobId = dto.JobId,
-                FreelancerId = freelancerId,
-                CoverLetter = dto.CoverLetter,
-                Bid = dto.Bid,
-                Timeline = dto.Timeline,
-                AppStatus = AppStatus.In_Progress,
-                Job = job,
-                Freelancer = null!
-            };
+            Application application;
+            if (existing != null) {
+                existing.CoverLetter = dto.CoverLetter;
+                existing.Bid = dto.Bid;
+                existing.Timeline = dto.Timeline;
+                existing.AppStatus = AppStatus.In_Progress;
+                existing.SubmittedAt = DateTime.UtcNow;
+                application = existing;
+            } else {
+                application = new Application {
+                    JobId = dto.JobId,
+                    FreelancerId = freelancerId,
+                    CoverLetter = dto.CoverLetter,
+                    Bid = dto.Bid,
+                    Timeline = dto.Timeline,
+                    AppStatus = AppStatus.In_Progress,
+                    SubmittedAt = DateTime.UtcNow,
+                    Job = job,
+                    Freelancer = null!
+                };
+            }
 
             // Process attachment uploads
             if (dto.Attachments != null && dto.Attachments.Any()) {
                 foreach (var file in dto.Attachments) {
-                    // 1. Validate file size and type (PDF / Images)
                     _fileValidationService.ValidateAttachment(file);
-
-                    // 2. Upload file to Cloudinary
                     string uploadUrl = await _fileUploadService.UploadAsync(file);
-
-                    // 3. Determine attachment type
                     string ext = Path.GetExtension(file.FileName).ToLowerInvariant();
                     string fileType = ext == ".pdf" ? "PDF" : "Image";
 
-                    // 4. Attach entity
                     application.Attachments.Add(new Attachment {
                         Url = uploadUrl,
                         FileName = file.FileName,
-                        Type = fileType
+                        Type = fileType,
+                        JobId = dto.JobId,
+                        ApplicationJobId = dto.JobId,
+                        ApplicationFreelancerId = freelancerId
                     });
                 }
             }
 
-            var createdApp = await _repository.CreateApplicationAsync(application);
-            var client = await _context.Clients.FirstOrDefaultAsync(c => c.UserId == job.ClientId);
+            var savedApp = existing != null
+                ? await UpdateAndReturnAsync(application)
+                : await _repository.CreateApplicationAsync(application);
 
-            ApplicationReceivedNotificationBuilder notificationBuilder = new ApplicationReceivedNotificationBuilder(client.UserId, createdApp.Freelancer.User.UserName, job.Title);
-            await _notificationService.SendNotificationAsync(notificationBuilder);
+            var client = await _context.Clients.FirstOrDefaultAsync(c => c.UserId == job.ClientId);
+            var freelancerName = await _context.Users
+                .Where(u => u.Id == freelancerId)
+                .Select(u => u.UserName)
+                .FirstOrDefaultAsync() ?? "A freelancer";
+
+            if (client != null) {
+                var notificationBuilder = new ApplicationReceivedNotificationBuilder(client.UserId, freelancerName, job.Title);
+                await _notificationService.SendNotificationAsync(notificationBuilder);
+            }
 
             return new ApplicationResponseDto {
-                JobId = createdApp.JobId,
+                JobId = savedApp.JobId,
                 JobTitle = job.Title,
                 JobBudget = job.Budget,
                 CompanyName = client?.CompanyName ?? string.Empty,
                 CompanyLogo = client?.Logo,
-                CoverLetter = createdApp.CoverLetter,
-                Bid = createdApp.Bid,
-                Timeline = createdApp.Timeline,
-                AppStatus = createdApp.AppStatus,
+                CoverLetter = savedApp.CoverLetter,
+                Bid = savedApp.Bid,
+                Timeline = savedApp.Timeline,
+                AppStatus = savedApp.AppStatus,
                 JobDeadline = job.Deadline,
-                Attachments = createdApp.Attachments.Select(att => new AttachmentResponseDto {
+                SubmittedAt = savedApp.SubmittedAt,
+                Attachments = savedApp.Attachments.Select(att => new AttachmentResponseDto {
                     Id = att.Id,
                     Url = att.Url,
                     FileName = att.FileName,
                     Type = att.Type
                 }).ToList()
             };
+        }
+
+        private async Task<Application> UpdateAndReturnAsync(Application application) {
+            await _repository.UpdateApplicationAsync(application);
+            return application;
         }
 
         public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int freelancerId) {

@@ -38,32 +38,32 @@ namespace backend.Services
                 return null;
             }
 
-            // Validate all skill IDs exist in database
-            if (dto.Skills.Any())
-            {
-                var skillIds = dto.Skills.Select(s => s.SkillId);
-                var validSkills = await _freelancerRepository.SkillsExistAsync(skillIds);
-                if (!validSkills)
-                {
-                    throw new ArgumentException("One or more provided Skill IDs do not exist.");
-                }
-            }
-
-            // Update core properties
-            freelancer.Bio = dto.Bio;
+            freelancer.Bio = dto.Bio ?? string.Empty;
             freelancer.Link = dto.Link;
 
-            // Map DTO skills to entity skills
-            var newSkillsList = dto.Skills.Select(s => new FreelancerSkill
+            List<FreelancerSkill>? newSkillsList = null;
+            if (dto.Skills != null)
             {
-                FreelancerId = userId,
-                SkillId = s.SkillId,
-                ExperienceLevel = s.ExperienceLevel
-            }).ToList();
+                if (dto.Skills.Count > 0)
+                {
+                    var skillIds = dto.Skills.Select(s => s.SkillId);
+                    var validSkills = await _freelancerRepository.SkillsExistAsync(skillIds);
+                    if (!validSkills)
+                    {
+                        throw new ArgumentException("One or more provided Skill IDs do not exist.");
+                    }
+                }
+
+                newSkillsList = dto.Skills.Select(s => new FreelancerSkill
+                {
+                    FreelancerId = userId,
+                    SkillId = s.SkillId,
+                    ExperienceLevel = s.ExperienceLevel
+                }).ToList();
+            }
 
             await _freelancerRepository.UpdateProfileAsync(freelancer, newSkillsList);
 
-            // Fetch refreshed data for returning updated DTO
             return await GetProfileByUserIdAsync(userId);
         }
 

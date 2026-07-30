@@ -17,8 +17,18 @@ function Applications() {
   const [tab, setTab] = useState("all");
   useEffect(() => { if (user) applicationService.list({ freelancerId: user.id }).then(setItems); }, [user]);
 
-  const withdraw = async (id) => { await applicationService.withdraw(id); setItems(items.filter((a) => a.id !== id)); toast.success("Application withdrawn"); };
-  const filtered = tab === "all" ? items : items.filter((a) => a.status.toLowerCase() === tab);
+  const withdraw = async (jobId) => {
+    if (!confirm("Withdraw this application?")) return;
+    try {
+      await applicationService.withdraw(jobId);
+      setItems((prev) => prev.filter((a) => String(a.jobId) !== String(jobId)));
+      toast.success("Application withdrawn");
+    } catch (err) {
+      toast.error(err?.message || "Could not withdraw application");
+    }
+  };
+  const canWithdraw = (status) => ["In_Progress", "Draft", "Pending", "Submitted"].includes(status);
+  const filtered = tab === "all" ? items : items.filter((a) => a.status.toLowerCase().replace("_", " ") === tab || a.status.toLowerCase() === tab);
 
   return (
     <div className="space-y-5">
@@ -31,10 +41,10 @@ function Applications() {
       {filtered.length === 0 ? <EmptyState icon={Briefcase} title="No applications" description="Apply to jobs to see them here." /> : (
         <div className="space-y-3">
           {filtered.map((a) => (
-            <div key={a.id} className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+            <div key={a.jobId ?? a.id} className="rounded-2xl border border-border bg-card p-5 shadow-soft">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <Link to="/jobs/$id" params={{ id: a.jobId }} className="font-semibold hover:text-primary">{a.job?.title || "Job removed"}</Link>
+                  <Link to="/jobs/$id" params={{ id: a.jobId }} className="font-semibold hover:text-primary">{a.job?.title || a.jobTitle || "Job removed"}</Link>
                   <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                     <span>Bid: <strong className="text-foreground">{formatMoney(a.bid)}</strong></span>
                     <span>Timeline: {a.timeline}</span>
@@ -46,7 +56,9 @@ function Applications() {
               <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{a.coverLetter}</p>
               <div className="mt-4 flex justify-end gap-2">
                 <Link to="/jobs/$id" params={{ id: a.jobId }}><Button variant="outline" size="sm"><Eye size={13} />View job</Button></Link>
-                {a.status === "Pending" && <Button variant="danger" size="sm" onClick={() => withdraw(a.id)}>Withdraw</Button>}
+                {canWithdraw(a.status) && (
+                  <Button variant="danger" size="sm" onClick={() => withdraw(a.jobId)}>Withdraw</Button>
+                )}
               </div>
             </div>
           ))}

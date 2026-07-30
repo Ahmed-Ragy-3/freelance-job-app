@@ -47,15 +47,19 @@ namespace backend.Repositories
             return existingCount == skillIds.Distinct().Count();
         }
 
-        public async Task UpdateProfileAsync(Freelancer freelancer, List<FreelancerSkill> newSkills)
+        public async Task UpdateProfileAsync(Freelancer freelancer, List<FreelancerSkill>? newSkills)
         {
-            var existingSkills = await _context.Set<FreelancerSkill>()
-                .Where(fs => fs.FreelancerId == freelancer.UserId)
-                .ToListAsync();
-
-            _context.Set<FreelancerSkill>().RemoveRange(existingSkills);
             _context.Freelancers.Update(freelancer);
-            await _context.Set<FreelancerSkill>().AddRangeAsync(newSkills);
+
+            if (newSkills != null)
+            {
+                var existingSkills = await _context.Set<FreelancerSkill>()
+                    .Where(fs => fs.FreelancerId == freelancer.UserId)
+                    .ToListAsync();
+
+                _context.Set<FreelancerSkill>().RemoveRange(existingSkills);
+                await _context.Set<FreelancerSkill>().AddRangeAsync(newSkills);
+            }
 
             await _context.SaveChangesAsync();
         }

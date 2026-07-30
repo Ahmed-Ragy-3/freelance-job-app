@@ -358,7 +358,15 @@ export const applicationService = {
   async getByFreelancerAndJob(freelancerId, jobId) {
     try {
       const apps = await this.list();
-      return apps.find((a) => String(a.jobId) === String(jobId)) || null;
+      const withdrawn = new Set(["Withdrawn", "withdrawn", 4]);
+      return (
+        apps.find(
+          (a) =>
+            String(a.jobId) === String(jobId) &&
+            !withdrawn.has(a.status) &&
+            !withdrawn.has(a.appStatus)
+        ) || null
+      );
     } catch {
       return null;
     }
@@ -432,8 +440,15 @@ export const profileService = {
         bio: data.bio || "",
         link: data.link || "",
         avgRate: data.avgRate || 0,
+        averageRate: data.avgRate || 0,
         rating: data.avgRate || 0,
-        skills: data.skills || [],
+        skills: (data.skills || []).map((s) => ({
+          id: s.skillId ?? s.id,
+          skillId: s.skillId ?? s.id,
+          name: s.skillName || s.name || "",
+          skillName: s.skillName || s.name || "",
+          experienceLevel: s.experienceLevel || 1,
+        })),
       };
     } catch {
       return null;
@@ -461,13 +476,18 @@ export const profileService = {
 
   async updateFreelancer(userId, patch) {
     const payload = {
-      bio: patch.bio || "",
-      link: patch.link || "",
-      skills: (patch.skills || []).map((s) => ({
-        skillId: typeof s === "object" ? s.skillId || s.id : s,
-        experienceLevel: s.experienceLevel || 1,
-      })),
+      bio: patch.bio ?? "",
+      link: patch.link || null,
     };
+    // Only send skills when explicitly provided so we don't wipe existing ones.
+    if (Array.isArray(patch.skills)) {
+      payload.skills = patch.skills
+        .map((s) => ({
+          skillId: typeof s === "object" ? Number(s.skillId ?? s.id) : Number(s),
+          experienceLevel: typeof s === "object" ? Number(s.experienceLevel || 1) : 1,
+        }))
+        .filter((s) => !Number.isNaN(s.skillId) && s.skillId > 0);
+    }
     const res = await api.put(`/users/freelancer/${userId}`, payload);
     return res.data;
   },
@@ -476,7 +496,7 @@ export const profileService = {
     const payload = {
       companyName: patch.companyName || "",
       companyDetails: patch.companyDetails || "",
-      logo: patch.logo || "",
+      logo: patch.logo || null,
     };
     const res = await api.put(`/users/client/${userId}`, payload);
     return res.data;
@@ -484,8 +504,8 @@ export const profileService = {
 
   async updateUser(patch) {
     const payload = {
-      userName: patch.username || patch.userName,
-      imageUrl: patch.imageUrl,
+      userName: patch.username || patch.userName || patch.name,
+      imageUrl: patch.imageUrl || null,
     };
     const res = await api.put("/users/me", payload);
     return normalizeUser(res.data);
@@ -641,10 +661,68 @@ export const notificationService = {
 };
 
 // ---------------- Dashboard Service ----------------
+function emptyChart(months = 6) {
+  const labels = [];
+  const now = new Date();
+  for (let i = months - 1; i >= 0; i -= 1) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    labels.push(d.toLocaleString("en", { month: "short" }));
+  }
+  const zeros = labels.map(() => 0);
+  return {
+    labels,
+    applications: [...zeros],
+    jobsCreated: [...zeros],
+    revenue: [...zeros],
+    categoriesPie: [],
+  };
+}
+
+function chartFromJobs(jobs = []) {
+  const chart = emptyChart();
+  const catMap = {};
+  jobs.forEach((j) => {
+    const names = j.categoryNames?.length
+      ? j.categoryNames
+      : (j.categories || []).map((c) => (typeof c === "string" ? c : c.name)).filter(Boolean);
+    if (!names.length) {
+      catMap.Other = (catMap.Other || 0) + 1;
+      return;
+    }
+    names.forEach((n) => {
+      catMap[n] = (catMap[n] || 0) + 1;
+    });
+  });
+  chart.categoriesPie = Object.entries(catMap).map(([name, value]) => ({ name, value }));
+
+  // Put totals in the latest month so charts render with real values.
+  const last = chart.labels.length - 1;
+  if (last >= 0) {
+    chart.jobsCreated[last] = jobs.length;
+    chart.applications[last] = jobs.reduce((sum, j) => sum + (j.proposals || 0), 0);
+    chart.revenue[last] = jobs
+      .filter((j) => j.status === "Completed" || j.status === "Finished")
+      .reduce((sum, j) => sum + (Number(j.budget) || 0), 0);
+  }
+  return chart;
+}
+
 export const dashboardService = {
   async freelancerStats() {
     const res = await api.get("/freelancer/dashboard");
     const d = res.data;
+    const chart = emptyChart();
+    const last = chart.labels.length - 1;
+    if (last >= 0) {
+      chart.applications[last] = d.activeApplicationsCount || 0;
+      chart.revenue[last] = Number(d.totalEarnings) || 0;
+    }
+    chart.categoriesPie = [
+      { name: "Active apps", value: d.activeApplicationsCount || 0 },
+      { name: "Active jobs", value: d.activeJobsCount || 0 },
+      { name: "Completed", value: d.completedJobsCount || 0 },
+      { name: "Bookmarks", value: d.totalBookmarksCount || 0 },
+    ].filter((x) => x.value > 0);
     return {
       totalApplications: d.activeApplicationsCount,
       accepted: d.completedJobsCount,
@@ -655,19 +733,31 @@ export const dashboardService = {
       rating: d.avgRating,
       unreadNotifications: d.unreadNotificationsCount,
       recentApplications: d.recentApplications || [],
-      chart: [],
+      chart,
     };
   },
 
   async adminStats() {
     const res = await api.get("/admin/overview/stats");
     const d = res.data;
+    const chart = emptyChart();
+    const last = chart.labels.length - 1;
+    if (last >= 0) {
+      chart.jobsCreated[last] = d.totalJobs || 0;
+      chart.applications[last] = d.totalApplications || 0;
+      chart.revenue[last] = d.totalRevenue || 0;
+    }
+    chart.categoriesPie = [
+      { name: "Users", value: d.totalUsers || 0 },
+      { name: "Jobs", value: d.totalJobs || 0 },
+      { name: "Applications", value: d.totalApplications || 0 },
+    ].filter((x) => x.value > 0);
     return {
       users: d.totalUsers,
       jobs: d.totalJobs,
       applications: d.totalApplications,
       revenue: d.totalRevenue,
-      chart: [],
+      chart,
     };
   },
 
@@ -679,7 +769,7 @@ export const dashboardService = {
       openJobs,
       applications: jobs.reduce((sum, j) => sum + (j.proposals || 0), 0),
       spend: jobs.filter((j) => j.status === "Completed").reduce((sum, j) => sum + j.budget, 0),
-      chart: [],
+      chart: chartFromJobs(jobs),
     };
   },
 };

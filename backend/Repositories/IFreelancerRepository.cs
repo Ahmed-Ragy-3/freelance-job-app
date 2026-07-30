@@ -8,6 +8,6 @@ namespace backend.Repositories
         Task<List<FreelancerSkill>> GetFreelancerSkillsAsync(int userId);
         Task<decimal> GetAverageRatingAsync(int userId);
         Task<bool> SkillsExistAsync(IEnumerable<int> skillIds);
-        Task UpdateProfileAsync(Freelancer freelancer, List<FreelancerSkill> newSkills);
+        Task UpdateProfileAsync(Freelancer freelancer, List<FreelancerSkill>? newSkills);
     }
 }

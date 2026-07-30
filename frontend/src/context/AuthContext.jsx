@@ -14,6 +14,11 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (creds) => { const { user } = await authService.login(creds); setUser(user); return user; }, []);
   const register = useCallback(async (data) => { const { user } = await authService.register(data); setUser(user); return user; }, []);
   const logout = useCallback(async () => { await authService.logout(); setUser(null); }, []);
+  const refreshUser = useCallback(async () => {
+    const u = await authService.me();
+    setUser(u);
+    return u;
+  }, []);
 
   const value = {
     user,
@@ -23,7 +28,7 @@ export function AuthProvider({ children }) {
     isFreelancer: user?.role === "Freelancer",
     isClient: user?.role === "Client",
     isAdmin: user?.role === "Admin",
-    login, register, logout,
+    login, register, logout, refreshUser,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

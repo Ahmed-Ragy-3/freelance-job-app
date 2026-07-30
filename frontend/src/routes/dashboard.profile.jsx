@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { profileService } from "@/services";
 import { useAuth } from "@/context/AuthContext";
@@ -14,18 +14,21 @@ export const Route = createFileRoute("/dashboard/profile")({
 });
 
 function Profile() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isEdit = pathname.endsWith("/edit");
   const { user, isFreelancer, isAdmin } = useAuth();
   const [prof, setProf] = useState(null);
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
-    if (!user) return;
+    if (isEdit || !user) return;
     if (isAdmin) { setProf(null); setLoading(false); return; }
     setLoading(true);
     (isFreelancer ? profileService.getFreelancer(user.id) : profileService.getClient(user.id))
       .then((p) => { setProf(p); setLoading(false); });
-  }, [user, isFreelancer, isAdmin]);
+  }, [user, isFreelancer, isAdmin, isEdit]);
+
+  if (isEdit) return <Outlet />;
 
   if (!user) return <p className="text-sm text-muted-foreground">Loading profile…</p>;
 
@@ -76,11 +79,17 @@ function Profile() {
         <p className="mt-4 text-sm text-muted-foreground">{prof.bio || prof.companyDetails}</p>
         {isFreelancer && (
           <>
-            <div className="mt-6 flex flex-wrap gap-1.5">{prof.skills?.map((s) => <Badge key={s} variant="primary">{s}</Badge>)}</div>
+            <div className="mt-6 flex flex-wrap gap-1.5">
+              {(prof.skills || []).map((s) => {
+                const label = typeof s === "string" ? s : s.skillName || s.name || "";
+                const key = typeof s === "object" ? s.skillId ?? s.id ?? label : label;
+                return label ? <Badge key={key} variant="primary">{label}</Badge> : null;
+              })}
+            </div>
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-border bg-background p-4"><div className="text-xs text-muted-foreground">Hourly rate</div><div className="mt-1 text-lg font-semibold">{formatMoney(prof.averageRate)}/hr</div></div>
-              <div className="rounded-xl border border-border bg-background p-4"><div className="text-xs text-muted-foreground">Reviews</div><div className="mt-1 text-lg font-semibold">{prof.reviews}</div></div>
-              <div className="rounded-xl border border-border bg-background p-4"><div className="text-xs text-muted-foreground">Website</div><a href="#" className="mt-1 inline-flex items-center gap-1 text-sm text-primary hover:underline">{prof.link} <ExternalLink size={12} /></a></div>
+              <div className="rounded-xl border border-border bg-background p-4"><div className="text-xs text-muted-foreground">Hourly rate</div><div className="mt-1 text-lg font-semibold">{formatMoney(prof.averageRate || prof.avgRate)}/hr</div></div>
+              <div className="rounded-xl border border-border bg-background p-4"><div className="text-xs text-muted-foreground">Rating</div><div className="mt-1 text-lg font-semibold">{prof.rating || prof.avgRate || 0}</div></div>
+              <div className="rounded-xl border border-border bg-background p-4"><div className="text-xs text-muted-foreground">Website</div>{prof.link ? <a href={prof.link} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-sm text-primary hover:underline">{prof.link} <ExternalLink size={12} /></a> : <div className="mt-1 text-sm text-muted-foreground">—</div>}</div>
             </div>
           </>
         )}

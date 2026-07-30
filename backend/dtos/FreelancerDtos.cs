@@ -35,17 +35,17 @@ namespace backend.DTOs {
 
         public static FreelancerSummaryDto FromFreelancer(Freelancer f) {
             var reviews = f.Applications?
-                .Where(a => a.Job?.Reviews != null)
-                .SelectMany(a => a.Job.Reviews)
+                .Where(a => a.Job?.Reviews != null && a.Job.Reviews.Any())
+                .SelectMany(a => a.Job!.Reviews)
                 .Where(r => r.RevieweeId == f.UserId)
                 .Select(r => r.Rate)
-                .ToList();
+                .ToList() ?? new List<int>();
 
             return new FreelancerSummaryDto {
                 UserId = f.UserId,
                 UserName = f.User?.UserName,
                 ImageUrl = f.User?.ImageUrl,
-                AvgRate = reviews != null && reviews.Any()
+                AvgRate = reviews.Count > 0
                     ? Math.Round((decimal)reviews.Average(), 2)
                     : 0
             };
@@ -56,6 +56,7 @@ namespace backend.DTOs {
     {
         public string Bio { get; set; } = string.Empty;
         public string? Link { get; set; }
-        public List<FreelancerSkillCreateDto> Skills { get; set; } = new();
+        /// <summary>When null, existing skills are left unchanged. Empty list clears skills.</summary>
+        public List<FreelancerSkillCreateDto>? Skills { get; set; }
     }
 }

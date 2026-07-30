@@ -70,18 +70,18 @@ function DashboardHome() {
         <div className="rounded-2xl border border-border bg-card p-5 shadow-soft lg:col-span-2">
           <h2 className="font-semibold">Activity over time</h2>
           <p className="text-sm text-muted-foreground">Monthly {isFreelancer ? "applications" : "jobs posted"}</p>
-          <div className="mt-4"><LineChart labels={stats.chart.labels} data={isFreelancer ? stats.chart.applications : stats.chart.jobsCreated} /></div>
+          <div className="mt-4"><LineChart labels={stats.chart?.labels} data={isFreelancer ? stats.chart?.applications : stats.chart?.jobsCreated} /></div>
         </div>
         <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
           <h2 className="font-semibold">By category</h2>
-          <div className="mt-2"><PieChart data={stats.chart.categoriesPie} /></div>
+          <div className="mt-2"><PieChart data={stats.chart?.categoriesPie} /></div>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-soft lg:col-span-2">
           <h2 className="font-semibold">Revenue trend</h2>
-          <div className="mt-2"><BarChart labels={stats.chart.labels} data={stats.chart.revenue} /></div>
+          <div className="mt-2"><BarChart labels={stats.chart?.labels} data={stats.chart?.revenue} /></div>
         </div>
         <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
           <h2 className="font-semibold">Notifications</h2>

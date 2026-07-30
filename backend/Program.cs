@@ -70,7 +70,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    sql => sql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
 ));
 
 builder.Services.AddScoped<IFreelancerRepository, FreelancerRepository>();
@@ -135,11 +136,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
 
-    if (app.Environment.IsDevelopment())
-    {
-        dbContext.Database.EnsureDeleted();
-    }
-
+    // Do not wipe the DB on every start — EnsureDeleted blocks LocalDB and hung the API.
     dbContext.Database.EnsureCreated();
     await seeder.SeedAsync();
 }

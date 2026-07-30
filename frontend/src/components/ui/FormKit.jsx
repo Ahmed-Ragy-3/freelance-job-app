@@ -40,10 +40,10 @@ export function Field({ label, error, children, hint }) {
   );
 }
 export function Input(props) {
-  return <input {...props} className={"w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary " + (props.className || "")} />;
+  return <input {...props} className={"w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary " + (props.className || "")} />;
 }
 export function Textarea(props) {
-  return <textarea {...props} className={"w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary " + (props.className || "")} />;
+  return <textarea {...props} className={"w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary " + (props.className || "")} />;
 }
 export function Select({ children, ...props }) {
   return <select {...props} className={"w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary " + (props.className || "")}>{children}</select>;
