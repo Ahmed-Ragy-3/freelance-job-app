@@ -17,6 +17,7 @@ namespace backend.Repositories
             return await _context.Applications
                 .Include(a => a.Job)
                 .Where(a => a.FreelancerId == freelancerId)
+                .Include(a => a.Attachments)
                 .OrderByDescending(a => a.JobId)
                 .ToListAsync();
         }

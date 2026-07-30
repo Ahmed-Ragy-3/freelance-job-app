@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<AttachmentOptions>(builder.Configuration.GetSection("Attachment"));
 builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
+builder.Services.Configure<JobDeadlineOptions>(builder.Configuration.GetSection(JobDeadlineOptions.SectionName));
+builder.Services.AddHostedService<JobDeadlineBackgroundService>();
 builder.Services.AddControllers();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
@@ -67,7 +69,8 @@ builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
 builder.Services.AddScoped<IFreelancerRepository, FreelancerRepository>();
 builder.Services.AddScoped<IFreelancerDashboardRepository, FreelancerDashboardRepository>();
 builder.Services.AddScoped<IFreelancerApplicationRepository, FreelancerApplicationRepository>();
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 // ===== Auth setup =====
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
@@ -158,8 +161,8 @@ static class DependencyInjection {
     public static IServiceCollection AddServices(this IServiceCollection services) {
         services.AddScoped<BookmarkService>();
         services.AddScoped<CategoryService>();
-        services.AddScoped<ClientService>();
-        services.AddScoped<FreelancerService>();
+        services.AddScoped<IClientService, ClientService>();
+        services.AddScoped<IFreelancerService, FreelancerService>();
         services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
         services.AddScoped<NotificationService>();
@@ -171,8 +174,12 @@ static class DependencyInjection {
         services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
         services.AddScoped<IFreelancerService, FreelancerService>();
+        services.AddScoped<JobStatusService>();
+        services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
         services.AddScoped<IFreelancerApplicationService, FreelancerApplicationService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFileValidationService, FileValidationService>();
 
         return services;
     }

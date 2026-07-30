@@ -35,8 +35,10 @@ namespace backend.DTOs {
 
         public static FreelancerSummaryDto FromFreelancer(Freelancer f) {
             var reviews = f.Applications?
-                .Where(a => a.Job?.Review != null)
-                .Select(a => a.Job.Review!.Rate)
+                .Where(a => a.Job?.Reviews != null)
+                .SelectMany(a => a.Job.Reviews)
+                .Where(r => r.RevieweeId == f.UserId)
+                .Select(r => r.Rate)
                 .ToList();
 
             return new FreelancerSummaryDto {

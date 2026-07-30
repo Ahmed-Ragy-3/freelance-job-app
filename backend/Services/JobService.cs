@@ -7,6 +7,7 @@ namespace backend.Services {
     public class JobService(AppDbContext appDbContext, NotificationService notificationService) {
         public async Task<List<JobSummaryDto>> GetTopNJobsAsync(int n) {
             var jobs = await appDbContext.Jobs
+                .Where(j => j.JobStatus == JobStatus.Approved && j.Deadline >= DateOnly.FromDateTime(DateTime.UtcNow))
                 .OrderByDescending(j => j.PostedAt)
                 .Take(n)
                 .ToListAsync();
@@ -45,9 +46,12 @@ namespace backend.Services {
                 query = query.Where(j => j.Categories.Any(c => c.CategoryId == filter.CategoryId.Value));
             }
 
-            // Status
+            // Status — public listings only show approved jobs unless a specific status is requested
             if (filter.Status.HasValue) {
                 query = query.Where(j => j.JobStatus == filter.Status.Value);
+            } else if (!filter.ClientId.HasValue) {
+                var today = DateOnly.FromDateTime(DateTime.UtcNow);
+                query = query.Where(j => j.JobStatus == JobStatus.Approved && j.Deadline >= today);
             }
 
             // Skills
@@ -162,6 +166,9 @@ namespace backend.Services {
             if (job.ClientId != clientId)
                 throw new ArgumentException($"You are not allowed to edit this job. {job.ClientId}");
 
+            if (job.JobStatus is not (JobStatus.Pending or JobStatus.Approved))
+                throw new InvalidOperationException($"Jobs with status '{job.JobStatus}' cannot be edited.");
+
             var categoryIds = updatedJob.CategoryIds.Distinct().ToList();
             var skillIds = updatedJob.SkillIds.Distinct().ToList();
             var tagIds = updatedJob.TagIds.Distinct().ToList();
@@ -203,10 +210,8 @@ namespace backend.Services {
             if (job.ClientId != clientId)
                 throw new ArgumentException("You are not allowed to delete this job.");
 
-            // Optional business rule
-            //if (job.JobStatus == JobStatus.Approved) {
-            //    throw new ArgumentException("This job cannot be deleted.");
-            //}
+            if (job.JobStatus is not (JobStatus.Pending or JobStatus.Rejected))
+                throw new InvalidOperationException($"Jobs with status '{job.JobStatus}' cannot be deleted.");
 
             appDbContext.Jobs.Remove(job);
 
@@ -215,7 +220,9 @@ namespace backend.Services {
 
         public async Task<List<JobSummaryDto>> SearchJobsAsync(string searchTerm) {
             var jobs = await appDbContext.Jobs
-                .Where(j => j.Title.Contains(searchTerm) || j.Description.Contains(searchTerm))
+                .Where(j => j.JobStatus == JobStatus.Approved
+                         && j.Deadline >= DateOnly.FromDateTime(DateTime.UtcNow)
+                         && (j.Title.Contains(searchTerm) || j.Description.Contains(searchTerm)))
                 .ToListAsync();
 
             return jobs.Select(JobSummaryDto.FromJob).ToList();

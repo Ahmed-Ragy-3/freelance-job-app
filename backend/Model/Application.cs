@@ -29,6 +29,8 @@ namespace backend.Model {
         [EnumDataType(typeof(AppStatus), ErrorMessage = "Invalid application status")]
         public AppStatus AppStatus { get; set; }
 
+        public DateTime? SubmittedAt { get; set; }
+
         [Required(ErrorMessage = "Job information is required")]
         [JsonIgnore]
         public required Job Job { get; set; }
@@ -36,5 +38,7 @@ namespace backend.Model {
         [Required(ErrorMessage = "Freelancer information is required")]
         [JsonIgnore]
         public required Freelancer Freelancer { get; set; }
+
+        public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
     }
 }

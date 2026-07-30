@@ -1,4 +1,4 @@
-﻿using backend.Model;
+using backend.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repositories
@@ -29,14 +29,13 @@ namespace backend.Repositories
 
         public async Task<decimal> GetAverageRatingAsync(int userId)
         {
-            var reviews = await _context.Set<Application>()
-                .Where(a => a.FreelancerId == userId && a.AppStatus == AppStatus.Accepted)
-                .Select(a => a.Job.Review)
-                .Where(r => r != null)
+            var ratings = await _context.Reviews
+                .Where(r => r.RevieweeId == userId)
+                .Select(r => (decimal?)r.Rate)
                 .ToListAsync();
 
-            if (!reviews.Any()) return 0;
-            return (decimal)reviews.Average(r => r.Rate);
+            if (!ratings.Any() || ratings.All(r => !r.HasValue)) return 0;
+            return Math.Round(ratings.Where(r => r.HasValue).Average(r => r!.Value), 2);
         }
 
         public async Task<bool> SkillsExistAsync(IEnumerable<int> skillIds)

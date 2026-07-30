@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using backend.Model;
 namespace backend.DTOs
 {
     // Sent by frontend when someone signs up
@@ -37,8 +39,42 @@ namespace backend.DTOs
         public int Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
-        public string Role { get; set; }
+        public Role Role { get; set; }
         public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+
+    public class UserProfileDto
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }
+        public Role Role { get; set; }
+        public DateTime CreatedAt { get; set; }
+
+        /// Indicates whether the role-specific profile (Freelancer or Client) has been set up.
+        public bool IsProfileComplete { get; set; }
+    }
+
+    public class UpdateUserProfileDto
+    {
+        [Required(ErrorMessage = "Username is required.")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters.")]
+        public string UserName { get; set; } = string.Empty;
+
+        [Url(ErrorMessage = "Invalid image URL format.")]
+        [StringLength(500, ErrorMessage = "Image URL is too long.")]
+        public string? ImageUrl { get; set; }
+    }
+
+    public class ChangePasswordDto
+    {
+        [Required]
+        public string CurrentPassword { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+        public string NewPassword { get; set; } = string.Empty;
     }
 }

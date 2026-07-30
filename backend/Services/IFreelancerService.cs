@@ -7,5 +7,7 @@ namespace backend.Services
         Task<FreelancerProfileDto?> GetProfileByUserIdAsync(int userId);
         Task<FreelancerProfileDto?> UpdateProfileAsync(int userId, UpdateFreelancerProfileDto dto);
         Task<List<FreelancerSummaryDto>> GetTopNFreelancersAsync(int n);
+
+        Task<List<FreelancerSummaryDto>> SearchFreelancersAsync(string searchTerm);
     }
 }
