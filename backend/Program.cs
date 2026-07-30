@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<AttachmentOptions>(builder.Configuration.GetSection("Attachment"));
 builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
+builder.Services.Configure<JobDeadlineOptions>(builder.Configuration.GetSection(JobDeadlineOptions.SectionName));
+builder.Services.AddHostedService<JobDeadlineBackgroundService>();
 builder.Services.AddControllers();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
@@ -130,8 +132,8 @@ static class DependencyInjection {
         services.AddScoped<IFreelancerService, FreelancerService>();
         services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
-
-        
+        services.AddScoped<JobStatusService>();
+        services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();
         services.AddScoped<IFreelancerApplicationService, FreelancerApplicationService>();
         services.AddScoped<IUserService, UserService>();

@@ -1,19 +1,5 @@
 namespace backend.DTOs
 {
-    // ---- Review ----
-    public class ReviewCreateDto
-    {
-        public int JobId { get; set; }
-        public int Rate { get; set; } // e.g. 1-5
-        public string Comment { get; set; } = string.Empty;
-    }
-
-    public class ReviewResponseDto
-    {
-        public int JobId { get; set; }
-        public int Rate { get; set; }
-        public string Comment { get; set; } = string.Empty;
-    }
 
     // ---- Bookmark ----
     public class BookmarkCreateDto

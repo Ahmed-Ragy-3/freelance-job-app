@@ -103,5 +103,90 @@ namespace backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Saves or updates a draft application without submitting it to the client.
+        /// </summary>
+        [HttpPost("draft")]
+        public async Task<ActionResult<ApplicationResponseDto>> SaveApplicationDraft([FromBody] SaveApplicationDraftDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            int? userId = User.GetUserId();
+            if (!userId.HasValue)
+                return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+            try
+            {
+                var result = await _applicationService.SaveApplicationDraftAsync(userId.Value, dto);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Submits a saved draft application to the client for review.
+        /// </summary>
+        [HttpPut("job/{jobId:int}/submit-application")]
+        public async Task<ActionResult<ApplicationResponseDto>> SubmitApplication(int jobId, [FromBody] ApplyJobDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            int? userId = User.GetUserId();
+            if (!userId.HasValue)
+                return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+            try
+            {
+                var result = await _applicationService.SubmitApplicationAsync(userId.Value, jobId, dto);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Freelancer marks their work as complete and ready for client review.
+        /// </summary>
+        [HttpPut("job/{jobId:int}/submit")]
+        public async Task<ActionResult<ApplicationResponseDto>> SubmitJob(int jobId)
+        {
+            int? userId = User.GetUserId();
+            if (!userId.HasValue)
+                return Unauthorized(new { message = "Invalid or missing user identity in JWT token." });
+
+            try
+            {
+                var result = await _applicationService.SubmitJobAsync(userId.Value, jobId);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }

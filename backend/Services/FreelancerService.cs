@@ -1,4 +1,4 @@
-﻿using backend.DTOs;
+using backend.DTOs;
 using backend.Model;
 using backend.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -92,7 +92,7 @@ namespace backend.Services
                             .Include(f => f.User)
                             .Include(f => f.Applications)
                                 .ThenInclude(a => a.Job)
-                                .ThenInclude(j => j.Review)
+                                .ThenInclude(j => j.Reviews)
                             .Include(f => f.FreelancerSkills)
                                 .ThenInclude(fs => fs.Skill)
                             .OrderByDescending(f => f.Applications.Count)

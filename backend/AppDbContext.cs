@@ -103,10 +103,24 @@ namespace backend
             });
 
             modelBuilder.Entity<Review>(entity => {
+                entity.HasIndex(r => new { r.JobId, r.ReviewerId }).IsUnique();
+
                 entity.HasOne(r => r.Job)
-                      .WithOne(j => j.Review)
-                      .HasForeignKey<Review>(r => r.JobId)
+                      .WithMany(j => j.Reviews)
+                      .HasForeignKey(r => r.JobId)
                       .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired();
+
+                entity.HasOne(r => r.Reviewer)
+                      .WithMany()
+                      .HasForeignKey(r => r.ReviewerId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired();
+
+                entity.HasOne(r => r.Reviewee)
+                      .WithMany()
+                      .HasForeignKey(r => r.RevieweeId)
+                      .OnDelete(DeleteBehavior.Restrict)
                       .IsRequired();
             });
 
