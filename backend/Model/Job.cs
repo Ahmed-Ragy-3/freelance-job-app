@@ -1,4 +1,4 @@
-﻿using backend.Model;
+using backend.Model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -38,10 +38,10 @@ namespace backend.Model {
         [ForeignKey(nameof(Client))]
         public int ClientId { get; set; }
 
-        //[ForeignKey(nameof(ClientId))]
+        //[ForeignKey(nameof(ClientId))]WW
         public Client Client { get; set; } = null!;
 
-        public Review? Review { get; set; }
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
         public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace backend.Model {
     [Table("Notifications")]
@@ -8,20 +9,25 @@ namespace backend.Model {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Required]
+        [ForeignKey(nameof(User))]
+        [JsonIgnore]
+        public int UserId { get; set; }
+        [JsonIgnore]
+        public User User { get; set; } = null!;
+
         [Required(ErrorMessage = "Notification title is required.")]
-        [StringLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
-        public required string Title { get; set; }
+        [StringLength(100, ErrorMessage = "Title cannot exceed 100 characters.")]
+        public string Title { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Notification message is required.")]
+        [StringLength(300, ErrorMessage = "Message cannot exceed 300 characters.")]
+        public string Message { get; set; } = string.Empty;
 
         [Required]
-        public bool Read { get; set; } = false; // Defaults to unread
+        public bool IsRead { get; set; } = false; // Defaults to unread
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        [Required]
-        public int UserId { get; set; }
-
-        [ForeignKey("UserId")]
-        public User User { get; set; } = null!;
     }
 }

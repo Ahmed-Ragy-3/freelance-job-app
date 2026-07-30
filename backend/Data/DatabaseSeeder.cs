@@ -40,7 +40,7 @@ namespace backend.Data {
             }
 
             if (!await _context.Bookmarks.AnyAsync()) {
-                await SeedBookmarksAsync(seededFreelancers, seededJobs);
+                await SeedBookmarksAsync(users, seededJobs);
             }
 
             if (!await _context.Notifications.AnyAsync()) {
@@ -237,14 +237,14 @@ namespace backend.Data {
             await _context.SaveChangesAsync();
         }
 
-        private async Task SeedBookmarksAsync(List<Freelancer> freelancers, List<Job> jobs) {
-            foreach (var freelancer in freelancers.OrderBy(_ => _random.Next()).Take(8)) {
+        private async Task SeedBookmarksAsync(List<User> users, List<Job> jobs) {
+            foreach (var user in users.OrderBy(_ => _random.Next()).Take(8)) {
                 foreach (var job in jobs.OrderBy(_ => _random.Next()).Take(2)) {
                     _context.Bookmarks.Add(new Bookmark {
                         JobId = job.Id,
-                        FreelancerId = freelancer.UserId,
+                        UserId = user.Id,
                         Job = job,
-                        Freelancer = freelancer
+                        User = user
                     });
                 }
             }
@@ -256,7 +256,7 @@ namespace backend.Data {
             foreach (var user in users.OrderBy(_ => _random.Next()).Take(12)) {
                 _context.Notifications.Add(new Notification {
                     Title = $"New update for {GetRandomWord()}",
-                    Read = _random.Next(100) < 50,
+                    IsRead = _random.Next(100) < 50,
                     CreatedAt = DateTime.UtcNow.AddDays(-_random.Next(30)),
                     UserId = user.Id,
                     User = user
