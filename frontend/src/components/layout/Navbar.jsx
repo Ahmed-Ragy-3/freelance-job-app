@@ -3,26 +3,25 @@ import { Menu, Search, Bell, Sun, Moon, LogOut, User, LayoutDashboard, Bookmark,
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useNotificationsContext } from "@/context/NotificationContext";
 import { Avatar } from "@/components/common/Avatar";
 import { Badge } from "@/components/common/Badge";
-import { notificationService } from "@/services";
 import { timeAgo } from "@/utils/format";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggle } = useTheme();
+  const { notifications, unreadCount, markRead, markAllRead } = useNotificationsContext();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [notifs, setNotifs] = useState([]);
   const [search, setSearch] = useState("");
   const notifRef = useRef(null);
   const userRef = useRef(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => { setMenuOpen(false); setNotifOpen(false); setUserOpen(false); }, [pathname]);
-  useEffect(() => { if (user) notificationService.list(user.id).then(setNotifs); }, [user]);
   useEffect(() => {
     const onClick = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
@@ -31,8 +30,6 @@ export function Navbar() {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
-
-  const unread = notifs.filter((n) => !n.read).length;
 
   const navLinks = [
     { to: "/jobs", label: "Find Work" },
@@ -73,24 +70,35 @@ export function Navbar() {
               <div ref={notifRef} className="relative">
                 <button onClick={() => setNotifOpen((v) => !v)} className="relative rounded-full p-2 text-muted-foreground hover:bg-accent hover:text-foreground">
                   <Bell size={18} />
-                  {unread > 0 && <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />}
+                  {unreadCount > 0 && <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background" />}
                 </button>
                 <AnimatePresence>
                   {notifOpen && (
                     <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="absolute right-0 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-popover shadow-elevated">
                       <div className="flex items-center justify-between border-b border-border p-3">
                         <span className="text-sm font-semibold">Notifications</span>
-                        {unread > 0 && <Badge variant="primary">{unread} new</Badge>}
+                        <div className="flex items-center gap-2">
+                          {unreadCount > 0 && (
+                            <>
+                              <Badge variant="primary">{unreadCount} new</Badge>
+                              <button onClick={markAllRead} className="text-xs text-primary hover:underline font-medium">Mark all read</button>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <div className="max-h-96 overflow-y-auto">
-                        {notifs.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">You're all caught up.</p>}
-                        {notifs.map((n) => (
-                          <div key={n.id} className="border-b border-border/60 p-3 last:border-0 hover:bg-accent/50">
+                        {notifications.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">You're all caught up.</p>}
+                        {notifications.map((n) => (
+                          <div
+                            key={n.id}
+                            onClick={() => { if (!n.read && !n.isRead) markRead(n.id); }}
+                            className={`border-b border-border/60 p-3 last:border-0 hover:bg-accent/50 cursor-pointer transition-colors ${!n.read && !n.isRead ? "bg-accent/20" : ""}`}
+                          >
                             <div className="flex justify-between gap-2">
                               <p className="text-sm font-medium text-foreground">{n.title}</p>
-                              {!n.read && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />}
+                              {(!n.read && !n.isRead) && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />}
                             </div>
-                            <p className="mt-0.5 text-xs text-muted-foreground">{n.body}</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">{n.message || n.body}</p>
                             <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">{timeAgo(n.createdAt)}</p>
                           </div>
                         ))}

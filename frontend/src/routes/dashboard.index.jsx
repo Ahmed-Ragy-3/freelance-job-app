@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { dashboardService, notificationService, applicationService, jobService } from "@/services";
+import { useNotificationsContext } from "@/context/NotificationContext";
+import { dashboardService, applicationService, jobService } from "@/services";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { LineChart, BarChart, PieChart } from "@/components/dashboard/Charts";
 import { JobCard } from "@/components/jobs/JobCard";
@@ -16,9 +17,9 @@ export const Route = createFileRoute("/dashboard/")({
 
 function DashboardHome() {
   const { user, isFreelancer, isClient } = useAuth();
+  const { notifications } = useNotificationsContext();
   const [stats, setStats] = useState(null);
   const [apps, setApps] = useState([]);
-  const [notifs, setNotifs] = useState([]);
   const [recommended, setRecommended] = useState([]);
   const [myJobs, setMyJobs] = useState([]);
 
@@ -32,7 +33,6 @@ function DashboardHome() {
       dashboardService.clientStats(user.id).then(setStats);
       jobService.byClient(user.id).then(setMyJobs);
     }
-    notificationService.list(user.id).then(setNotifs);
   }, [user, isFreelancer, isClient]);
 
   if (!stats) return null;
@@ -86,13 +86,17 @@ function DashboardHome() {
         <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
           <h2 className="font-semibold">Notifications</h2>
           <div className="mt-3 space-y-3">
-            {notifs.slice(0, 4).map((n) => (
+            {notifications.slice(0, 4).map((n) => (
               <div key={n.id} className="border-b border-border/50 pb-3 last:border-0">
-                <div className="flex justify-between gap-2"><p className="text-sm font-medium">{n.title}</p>{!n.read && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}</div>
-                <p className="mt-1 text-xs text-muted-foreground">{timeAgo(n.createdAt)}</p>
+                <div className="flex justify-between gap-2">
+                  <p className="text-sm font-medium">{n.title}</p>
+                  {(!n.read && !n.isRead) && <span className="mt-1 h-2 w-2 rounded-full bg-primary" />}
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground">{n.message || n.body}</p>
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">{timeAgo(n.createdAt)}</p>
               </div>
             ))}
-            {notifs.length === 0 && <p className="text-sm text-muted-foreground">No notifications yet.</p>}
+            {notifications.length === 0 && <p className="text-sm text-muted-foreground">No notifications yet.</p>}
           </div>
         </div>
       </div>

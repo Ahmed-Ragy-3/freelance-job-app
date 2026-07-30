@@ -9,6 +9,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 function NotFoundComponent() {
   return (
@@ -82,8 +83,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <Outlet />
-          <Toaster position="top-right" toastOptions={{ style: { background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
+          <NotificationProvider>
+            <Outlet />
+            <Toaster position="top-right" toastOptions={{ style: { background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" } }} />
+          </NotificationProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

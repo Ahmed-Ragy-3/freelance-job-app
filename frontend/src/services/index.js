@@ -632,10 +632,14 @@ export const notificationService = {
   async list() {
     const res = await api.get("/notifications");
     return (res.data || []).map((n) => ({
-      id: n.id,
-      title: n.title,
-      createdAt: n.createdAt,
-      read: n.read,
+      id: n.id ?? n.Id,
+      userId: n.userId ?? n.UserId,
+      title: n.title ?? n.Title,
+      message: n.message ?? n.Message ?? n.body ?? n.Body ?? "",
+      body: n.message ?? n.Message ?? n.body ?? n.Body ?? "",
+      createdAt: n.createdAt ?? n.CreatedAt,
+      read: n.isRead ?? n.IsRead ?? n.read ?? n.Read ?? false,
+      isRead: n.isRead ?? n.IsRead ?? n.read ?? n.Read ?? false,
     }));
   },
 
