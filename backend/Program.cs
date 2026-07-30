@@ -133,6 +133,7 @@ static class DependencyInjection {
         services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
         services.AddScoped<JobStatusService>();
+        services.AddScoped<IReviewService, ReviewService>();
 
         
         services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();

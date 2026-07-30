@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Model {
@@ -13,6 +13,18 @@ namespace backend.Model {
 
         public Job Job { get; set; } = null!;
 
+        [Required]
+        [ForeignKey(nameof(Reviewer))]
+        public int ReviewerId { get; set; }
+
+        public User Reviewer { get; set; } = null!;
+
+        [Required]
+        [ForeignKey(nameof(Reviewee))]
+        public int RevieweeId { get; set; }
+
+        public User Reviewee { get; set; } = null!;
+
         [Required(ErrorMessage = "Rating is required.")]
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         public int Rate { get; set; }
@@ -20,5 +32,7 @@ namespace backend.Model {
         [StringLength(1000, MinimumLength = 5,
             ErrorMessage = "Comment must be between 5 and 1000 characters.")]
         public string? Comment { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
