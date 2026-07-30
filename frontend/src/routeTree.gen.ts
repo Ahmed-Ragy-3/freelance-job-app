@@ -9,47 +9,51 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as PublicRouteImport } from './routes/_public'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as DashboardReviewsRouteImport } from './routes/dashboard.reviews'
-import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
-import { Route as DashboardPortfolioRouteImport } from './routes/dashboard.portfolio'
-import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
-import { Route as DashboardCompanyRouteImport } from './routes/dashboard.company'
-import { Route as DashboardBookmarksRouteImport } from './routes/dashboard.bookmarks'
-import { Route as DashboardApplicationsRouteImport } from './routes/dashboard.applications'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminTagsRouteImport } from './routes/admin.tags'
-import { Route as AdminSkillsRouteImport } from './routes/admin.skills'
-import { Route as AdminReportsRouteImport } from './routes/admin.reports'
-import { Route as AdminJobsRouteImport } from './routes/admin.jobs'
-import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
-import { Route as PublicVerifyEmailRouteImport } from './routes/_public.verify-email'
-import { Route as PublicTermsRouteImport } from './routes/_public.terms'
-import { Route as PublicSearchRouteImport } from './routes/_public.search'
-import { Route as PublicRegisterRouteImport } from './routes/_public.register'
-import { Route as PublicPrivacyRouteImport } from './routes/_public.privacy'
-import { Route as PublicLoginRouteImport } from './routes/_public.login'
-import { Route as PublicFaqRouteImport } from './routes/_public.faq'
+import { Route as PublicRouteImport } from './routes/_public'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as PublicAboutRouteImport } from './routes/_public.about'
-import { Route as DashboardJobsIndexRouteImport } from './routes/dashboard.jobs.index'
-import { Route as PublicJobsIndexRouteImport } from './routes/_public.jobs.index'
-import { Route as DashboardProfileEditRouteImport } from './routes/dashboard.profile.edit'
-import { Route as DashboardJobsNewRouteImport } from './routes/dashboard.jobs.new'
-import { Route as PublicJobsIdRouteImport } from './routes/_public.jobs.$id'
-import { Route as PublicFreelancersIdRouteImport } from './routes/_public.freelancers.$id'
+import { Route as PublicFaqRouteImport } from './routes/_public.faq'
+import { Route as PublicLoginRouteImport } from './routes/_public.login'
+import { Route as PublicPrivacyRouteImport } from './routes/_public.privacy'
+import { Route as PublicRegisterRouteImport } from './routes/_public.register'
+import { Route as PublicSearchRouteImport } from './routes/_public.search'
+import { Route as PublicTermsRouteImport } from './routes/_public.terms'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public.verify-email'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminJobsRouteImport } from './routes/admin.jobs'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSkillsRouteImport } from './routes/admin.skills'
+import { Route as AdminTagsRouteImport } from './routes/admin.tags'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardApplicationsRouteImport } from './routes/dashboard.applications'
+import { Route as DashboardBookmarksRouteImport } from './routes/dashboard.bookmarks'
+import { Route as DashboardCompanyRouteImport } from './routes/dashboard.company'
+import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
+import { Route as DashboardPortfolioRouteImport } from './routes/dashboard.portfolio'
+import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
+import { Route as DashboardReviewsRouteImport } from './routes/dashboard.reviews'
 import { Route as PublicCompaniesIdRouteImport } from './routes/_public.companies.$id'
-import { Route as DashboardJobsIdEditRouteImport } from './routes/dashboard.jobs.$id.edit'
-import { Route as DashboardJobsIdApplicationsRouteImport } from './routes/dashboard.jobs.$id.applications'
+import { Route as PublicFreelancersIdRouteImport } from './routes/_public.freelancers.$id'
+import { Route as PublicJobsIndexRouteImport } from './routes/_public.jobs.index'
+import { Route as PublicJobsIdRouteImport } from './routes/_public.jobs.$id'
+import { Route as DashboardJobsIndexRouteImport } from './routes/dashboard.jobs.index'
+import { Route as DashboardJobsNewRouteImport } from './routes/dashboard.jobs.new'
+import { Route as DashboardProfileEditRouteImport } from './routes/dashboard.profile.edit'
 import { Route as PublicJobsIdApplyRouteImport } from './routes/_public.jobs.$id_.apply'
+import { Route as DashboardJobsIdApplicationsRouteImport } from './routes/dashboard.jobs.$id.applications'
+import { Route as DashboardJobsIdEditRouteImport } from './routes/dashboard.jobs.$id.edit'
 
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -57,118 +61,14 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicRoute = PublicRouteImport.update({
-  id: '/_public',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const DashboardReviewsRoute = DashboardReviewsRouteImport.update({
-  id: '/reviews',
-  path: '/reviews',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardProfileRoute = DashboardProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardPortfolioRoute = DashboardPortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardCompanyRoute = DashboardCompanyRouteImport.update({
-  id: '/company',
-  path: '/company',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardBookmarksRoute = DashboardBookmarksRouteImport.update({
-  id: '/bookmarks',
-  path: '/bookmarks',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardApplicationsRoute = DashboardApplicationsRouteImport.update({
-  id: '/applications',
-  path: '/applications',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminTagsRoute = AdminTagsRouteImport.update({
-  id: '/tags',
-  path: '/tags',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSkillsRoute = AdminSkillsRouteImport.update({
-  id: '/skills',
-  path: '/skills',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminReportsRoute = AdminReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminJobsRoute = AdminJobsRouteImport.update({
-  id: '/jobs',
-  path: '/jobs',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
-  getParentRoute: () => AdminRoute,
-} as any)
-const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicTermsRoute = PublicTermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicSearchRoute = PublicSearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicRegisterRoute = PublicRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicLoginRoute = PublicLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const PublicAboutRoute = PublicAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicFaqRoute = PublicFaqRouteImport.update({
@@ -176,34 +76,114 @@ const PublicFaqRoute = PublicFaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => PublicRoute,
 } as any)
-const PublicAboutRoute = PublicAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const PublicLoginRoute = PublicLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => PublicRoute,
 } as any)
-const DashboardJobsIndexRoute = DashboardJobsIndexRouteImport.update({
-  id: '/jobs/',
-  path: '/jobs/',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const PublicJobsIndexRoute = PublicJobsIndexRouteImport.update({
-  id: '/jobs/',
-  path: '/jobs/',
+const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => PublicRoute,
 } as any)
-const DashboardProfileEditRoute = DashboardProfileEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => DashboardProfileRoute,
+const PublicRegisterRoute = PublicRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => PublicRoute,
 } as any)
-const DashboardJobsNewRoute = DashboardJobsNewRouteImport.update({
-  id: '/jobs/new',
-  path: '/jobs/new',
+const PublicSearchRoute = PublicSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicTermsRoute = PublicTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => PublicRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminJobsRoute = AdminJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSkillsRoute = AdminSkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTagsRoute = AdminTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
-const PublicJobsIdRoute = PublicJobsIdRouteImport.update({
-  id: '/jobs/$id',
-  path: '/jobs/$id',
+const DashboardApplicationsRoute = DashboardApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardBookmarksRoute = DashboardBookmarksRouteImport.update({
+  id: '/bookmarks',
+  path: '/bookmarks',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCompanyRoute = DashboardCompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPortfolioRoute = DashboardPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardReviewsRoute = DashboardReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const PublicCompaniesIdRoute = PublicCompaniesIdRouteImport.update({
+  id: '/companies/$id',
+  path: '/companies/$id',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicFreelancersIdRoute = PublicFreelancersIdRouteImport.update({
@@ -211,15 +191,35 @@ const PublicFreelancersIdRoute = PublicFreelancersIdRouteImport.update({
   path: '/freelancers/$id',
   getParentRoute: () => PublicRoute,
 } as any)
-const PublicCompaniesIdRoute = PublicCompaniesIdRouteImport.update({
-  id: '/companies/$id',
-  path: '/companies/$id',
+const PublicJobsIndexRoute = PublicJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
   getParentRoute: () => PublicRoute,
 } as any)
-const DashboardJobsIdEditRoute = DashboardJobsIdEditRouteImport.update({
-  id: '/jobs/$id/edit',
-  path: '/jobs/$id/edit',
+const PublicJobsIdRoute = PublicJobsIdRouteImport.update({
+  id: '/jobs/$id',
+  path: '/jobs/$id',
+  getParentRoute: () => PublicRoute,
+} as any)
+const DashboardJobsIndexRoute = DashboardJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardJobsNewRoute = DashboardJobsNewRouteImport.update({
+  id: '/jobs/new',
+  path: '/jobs/new',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfileEditRoute = DashboardProfileEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => DashboardProfileRoute,
+} as any)
+const PublicJobsIdApplyRoute = PublicJobsIdApplyRouteImport.update({
+  id: '/jobs/$id_/apply',
+  path: '/jobs/$id/apply',
+  getParentRoute: () => PublicRoute,
 } as any)
 const DashboardJobsIdApplicationsRoute =
   DashboardJobsIdApplicationsRouteImport.update({
@@ -227,10 +227,10 @@ const DashboardJobsIdApplicationsRoute =
     path: '/jobs/$id/applications',
     getParentRoute: () => DashboardRoute,
   } as any)
-const PublicJobsIdApplyRoute = PublicJobsIdApplyRouteImport.update({
-  id: '/jobs/$id_/apply',
-  path: '/jobs/$id/apply',
-  getParentRoute: () => PublicRoute,
+const DashboardJobsIdEditRoute = DashboardJobsIdEditRouteImport.update({
+  id: '/jobs/$id/edit',
+  path: '/jobs/$id/edit',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -472,18 +472,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public': {
@@ -493,158 +486,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof DashboardRoute
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/dashboard/reviews': {
-      id: '/dashboard/reviews'
-      path: '/reviews'
-      fullPath: '/dashboard/reviews'
-      preLoaderRoute: typeof DashboardReviewsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/profile': {
-      id: '/dashboard/profile'
-      path: '/profile'
-      fullPath: '/dashboard/profile'
-      preLoaderRoute: typeof DashboardProfileRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/portfolio': {
-      id: '/dashboard/portfolio'
-      path: '/portfolio'
-      fullPath: '/dashboard/portfolio'
-      preLoaderRoute: typeof DashboardPortfolioRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/notifications': {
-      id: '/dashboard/notifications'
-      path: '/notifications'
-      fullPath: '/dashboard/notifications'
-      preLoaderRoute: typeof DashboardNotificationsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/company': {
-      id: '/dashboard/company'
-      path: '/company'
-      fullPath: '/dashboard/company'
-      preLoaderRoute: typeof DashboardCompanyRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/bookmarks': {
-      id: '/dashboard/bookmarks'
-      path: '/bookmarks'
-      fullPath: '/dashboard/bookmarks'
-      preLoaderRoute: typeof DashboardBookmarksRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/applications': {
-      id: '/dashboard/applications'
-      path: '/applications'
-      fullPath: '/dashboard/applications'
-      preLoaderRoute: typeof DashboardApplicationsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/tags': {
-      id: '/admin/tags'
-      path: '/tags'
-      fullPath: '/admin/tags'
-      preLoaderRoute: typeof AdminTagsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/skills': {
-      id: '/admin/skills'
-      path: '/skills'
-      fullPath: '/admin/skills'
-      preLoaderRoute: typeof AdminSkillsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/reports': {
-      id: '/admin/reports'
-      path: '/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/jobs': {
-      id: '/admin/jobs'
-      path: '/jobs'
-      fullPath: '/admin/jobs'
-      preLoaderRoute: typeof AdminJobsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/categories': {
-      id: '/admin/categories'
-      path: '/categories'
-      fullPath: '/admin/categories'
-      preLoaderRoute: typeof AdminCategoriesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/_public/verify-email': {
-      id: '/_public/verify-email'
-      path: '/verify-email'
-      fullPath: '/verify-email'
-      preLoaderRoute: typeof PublicVerifyEmailRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/terms': {
-      id: '/_public/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof PublicTermsRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/search': {
-      id: '/_public/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof PublicSearchRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/register': {
-      id: '/_public/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof PublicRegisterRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/privacy': {
-      id: '/_public/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PublicPrivacyRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/login': {
-      id: '/_public/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof PublicLoginRouteImport
+    '/_public/about': {
+      id: '/_public/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/faq': {
@@ -654,46 +514,158 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicFaqRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_public/about': {
-      id: '/_public/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof PublicAboutRouteImport
+    '/_public/login': {
+      id: '/_public/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/dashboard/jobs/': {
-      id: '/dashboard/jobs/'
-      path: '/jobs'
-      fullPath: '/dashboard/jobs/'
-      preLoaderRoute: typeof DashboardJobsIndexRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/_public/jobs/': {
-      id: '/_public/jobs/'
-      path: '/jobs'
-      fullPath: '/jobs/'
-      preLoaderRoute: typeof PublicJobsIndexRouteImport
+    '/_public/privacy': {
+      id: '/_public/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PublicPrivacyRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/dashboard/profile/edit': {
-      id: '/dashboard/profile/edit'
-      path: '/edit'
-      fullPath: '/dashboard/profile/edit'
-      preLoaderRoute: typeof DashboardProfileEditRouteImport
-      parentRoute: typeof DashboardProfileRoute
+    '/_public/register': {
+      id: '/_public/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof PublicRegisterRouteImport
+      parentRoute: typeof PublicRoute
     }
-    '/dashboard/jobs/new': {
-      id: '/dashboard/jobs/new'
-      path: '/jobs/new'
-      fullPath: '/dashboard/jobs/new'
-      preLoaderRoute: typeof DashboardJobsNewRouteImport
+    '/_public/search': {
+      id: '/_public/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof PublicSearchRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/terms': {
+      id: '/_public/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof PublicTermsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/verify-email': {
+      id: '/_public/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof PublicVerifyEmailRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/jobs': {
+      id: '/admin/jobs'
+      path: '/jobs'
+      fullPath: '/admin/jobs'
+      preLoaderRoute: typeof AdminJobsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/skills': {
+      id: '/admin/skills'
+      path: '/skills'
+      fullPath: '/admin/skills'
+      preLoaderRoute: typeof AdminSkillsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tags': {
+      id: '/admin/tags'
+      path: '/tags'
+      fullPath: '/admin/tags'
+      preLoaderRoute: typeof AdminTagsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_public/jobs/$id': {
-      id: '/_public/jobs/$id'
-      path: '/jobs/$id'
-      fullPath: '/jobs/$id'
-      preLoaderRoute: typeof PublicJobsIdRouteImport
+    '/dashboard/applications': {
+      id: '/dashboard/applications'
+      path: '/applications'
+      fullPath: '/dashboard/applications'
+      preLoaderRoute: typeof DashboardApplicationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/bookmarks': {
+      id: '/dashboard/bookmarks'
+      path: '/bookmarks'
+      fullPath: '/dashboard/bookmarks'
+      preLoaderRoute: typeof DashboardBookmarksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/company': {
+      id: '/dashboard/company'
+      path: '/company'
+      fullPath: '/dashboard/company'
+      preLoaderRoute: typeof DashboardCompanyRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/portfolio': {
+      id: '/dashboard/portfolio'
+      path: '/portfolio'
+      fullPath: '/dashboard/portfolio'
+      preLoaderRoute: typeof DashboardPortfolioRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/profile': {
+      id: '/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof DashboardProfileRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/reviews': {
+      id: '/dashboard/reviews'
+      path: '/reviews'
+      fullPath: '/dashboard/reviews'
+      preLoaderRoute: typeof DashboardReviewsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_public/companies/$id': {
+      id: '/_public/companies/$id'
+      path: '/companies/$id'
+      fullPath: '/companies/$id'
+      preLoaderRoute: typeof PublicCompaniesIdRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/freelancers/$id': {
@@ -703,19 +675,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicFreelancersIdRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_public/companies/$id': {
-      id: '/_public/companies/$id'
-      path: '/companies/$id'
-      fullPath: '/companies/$id'
-      preLoaderRoute: typeof PublicCompaniesIdRouteImport
+    '/_public/jobs/': {
+      id: '/_public/jobs/'
+      path: '/jobs'
+      fullPath: '/jobs/'
+      preLoaderRoute: typeof PublicJobsIndexRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/dashboard/jobs/$id/edit': {
-      id: '/dashboard/jobs/$id/edit'
-      path: '/jobs/$id/edit'
-      fullPath: '/dashboard/jobs/$id/edit'
-      preLoaderRoute: typeof DashboardJobsIdEditRouteImport
+    '/_public/jobs/$id': {
+      id: '/_public/jobs/$id'
+      path: '/jobs/$id'
+      fullPath: '/jobs/$id'
+      preLoaderRoute: typeof PublicJobsIdRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/dashboard/jobs/': {
+      id: '/dashboard/jobs/'
+      path: '/jobs'
+      fullPath: '/dashboard/jobs/'
+      preLoaderRoute: typeof DashboardJobsIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/jobs/new': {
+      id: '/dashboard/jobs/new'
+      path: '/jobs/new'
+      fullPath: '/dashboard/jobs/new'
+      preLoaderRoute: typeof DashboardJobsNewRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/profile/edit': {
+      id: '/dashboard/profile/edit'
+      path: '/edit'
+      fullPath: '/dashboard/profile/edit'
+      preLoaderRoute: typeof DashboardProfileEditRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    '/_public/jobs/$id_/apply': {
+      id: '/_public/jobs/$id_/apply'
+      path: '/jobs/$id/apply'
+      fullPath: '/jobs/$id/apply'
+      preLoaderRoute: typeof PublicJobsIdApplyRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/dashboard/jobs/$id/applications': {
       id: '/dashboard/jobs/$id/applications'
@@ -724,12 +724,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardJobsIdApplicationsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_public/jobs/$id_/apply': {
-      id: '/_public/jobs/$id_/apply'
-      path: '/jobs/$id/apply'
-      fullPath: '/jobs/$id/apply'
-      preLoaderRoute: typeof PublicJobsIdApplyRouteImport
-      parentRoute: typeof PublicRoute
+    '/dashboard/jobs/$id/edit': {
+      id: '/dashboard/jobs/$id/edit'
+      path: '/jobs/$id/edit'
+      fullPath: '/dashboard/jobs/$id/edit'
+      preLoaderRoute: typeof DashboardJobsIdEditRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
