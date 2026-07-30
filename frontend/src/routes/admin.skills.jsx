@@ -15,9 +15,38 @@ function AdminSkills() {
   const load = () => adminService.skills().then(setItems);
   useEffect(() => { load(); }, []);
 
-  const add = async (e) => { e.preventDefault(); if (!name.trim()) return; await adminService.createSkill(name.trim()); setName(""); toast.success("Skill added"); load(); };
-  const save = async (id) => { await adminService.updateSkill(id, editName.trim()); setEditing(null); toast.success("Skill updated"); load(); };
-  const remove = async (id) => { if (!confirm("Delete this skill?")) return; await adminService.deleteSkill(id); toast.success("Skill deleted"); load(); };
+  const add = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    try {
+      await adminService.createSkill(name.trim());
+      setName("");
+      toast.success("Skill added");
+      load();
+    } catch (err) {
+      toast.error(err?.message || "Failed to add skill");
+    }
+  };
+  const save = async (id) => {
+    try {
+      await adminService.updateSkill(id, editName.trim());
+      setEditing(null);
+      toast.success("Skill updated");
+      load();
+    } catch (err) {
+      toast.error(err?.message || "Failed to update skill");
+    }
+  };
+  const remove = async (id) => {
+    if (!confirm("Delete this skill?")) return;
+    try {
+      await adminService.deleteSkill(id);
+      toast.success("Skill deleted");
+      load();
+    } catch (err) {
+      toast.error(err?.message || "Failed to delete skill");
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -32,13 +61,13 @@ function AdminSkills() {
             {editing === s.id ? (
               <>
                 <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 w-36 py-1" />
-                <Button size="sm" onClick={() => save(s.name)}>Save</Button>
+                <Button size="sm" onClick={() => save(s.id)}>Save</Button>
               </>
             ) : (
               <>
                 <Badge variant="primary">{s.name}</Badge>
                 <Button size="sm" variant="ghost" onClick={() => { setEditing(s.id); setEditName(s.name); }}>Edit</Button>
-                <Button size="sm" variant="ghost" onClick={() => remove(s.name)}>Delete</Button>
+                <Button size="sm" variant="ghost" onClick={() => remove(s.id)}>Delete</Button>
               </>
             )}
           </div>
