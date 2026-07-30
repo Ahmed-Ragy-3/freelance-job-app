@@ -30,21 +30,21 @@ namespace backend.Repositories
                                   || a.Job.JobStatus == JobStatus.Delayed));
         }
 
-        // Completed Jobs: Submitted applications where the job is finished
+        // Completed Jobs: Applications on finished jobs
         public async Task<int> GetCompletedJobsCountAsync(int freelancerId)
         {
             return await _context.Applications
                 .CountAsync(a => a.FreelancerId == freelancerId
-                              && a.AppStatus == AppStatus.JobDone
+                              && (a.AppStatus == AppStatus.JobDone || a.AppStatus == AppStatus.Accepted)
                               && a.Job.JobStatus == JobStatus.Finished);
         }
 
-        // Total Earnings: Sum of bids on finished jobs where freelancer submitted work
+        // Total Earnings: Sum of bids on finished jobs
         public async Task<decimal> GetTotalEarningsAsync(int freelancerId)
         {
             return await _context.Applications
                 .Where(a => a.FreelancerId == freelancerId
-                         && a.AppStatus == AppStatus.JobDone
+                         && (a.AppStatus == AppStatus.JobDone || a.AppStatus == AppStatus.Accepted)
                          && a.Job.JobStatus == JobStatus.Finished)
                 .SumAsync(a => (decimal)a.Bid);
         }

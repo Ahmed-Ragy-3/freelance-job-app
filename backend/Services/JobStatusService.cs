@@ -83,10 +83,10 @@ namespace backend.Services
                 throw new InvalidOperationException($"Only in-progress or delayed jobs can be marked finished. Current status: {job.JobStatus}.");
 
             var hiredApplication = job.Applications
-                .FirstOrDefault(a => a.AppStatus == AppStatus.JobDone);
+                .FirstOrDefault(a => a.AppStatus == AppStatus.JobDone || a.AppStatus == AppStatus.Accepted);
 
             if (hiredApplication == null)
-                throw new InvalidOperationException("The freelancer must submit the job before it can be marked finished.");
+                throw new InvalidOperationException("No active or submitted freelancer application found for this job.");
 
             job.JobStatus = JobStatus.Finished;
             job.FinishedAt = DateTime.UtcNow;
