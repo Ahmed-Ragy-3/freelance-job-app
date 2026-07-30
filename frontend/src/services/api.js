@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const API_BASE_URL =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
-  "http://localhost:5140/api";
+  "/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

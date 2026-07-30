@@ -721,14 +721,62 @@ export const staticData = {
   },
   async topFreelancers() {
     const stats = await this.stats();
-    return stats.topFreelancers || [];
+    return (stats.topFreelancers || []).map(f => ({
+      ...f,
+      id: f.userId,
+      name: f.userName,
+      avatar: f.imageUrl,
+      rating: f.avgRate,
+      skills: f.skills || [],
+      title: f.title || "Freelancer",
+      location: f.location || "Remote",
+      bio: f.bio || "",
+      completed: f.completed || 0,
+      averageRate: f.avgRate || 0
+    }));
   },
   async topClients() {
     const stats = await this.stats();
-    return stats.topClients || [];
+    return (stats.topClients || []).map(c => ({
+      ...c,
+      userId: c.userId,
+      companyName: c.companyName,
+      companyDetails: c.companyDetails || "",
+      logo: c.logo || c.imageUrl,
+      location: c.location || "Worldwide",
+      rating: c.rating || 5,
+      reviews: c.reviews || 0,
+      openJobs: c.openJobs || 0,
+      responseTime: c.responseTime || "1 day"
+    }));
   },
   async featuredJobs() {
     const stats = await this.stats();
     return (stats.topJobs || []).map(normalizeJob);
+  },
+  async testimonials() {
+    return [
+      {
+        id: 1,
+        text: "Workly has completely transformed how we build our team. The quality of freelancers is unmatched.",
+        name: "Sarah Jenkins",
+        role: "CTO at TechCorp",
+        avatar: ""
+      },
+      {
+        id: 2,
+        text: "I found an amazing designer within 2 hours of posting my job. Highly recommended!",
+        name: "Michael Chen",
+        role: "Founder at StartupX",
+        avatar: ""
+      },
+      {
+        id: 3,
+        text: "The platform is intuitive and the payment protection gives us great peace of mind.",
+        name: "Emily Rodriguez",
+        role: "Marketing Director",
+        avatar: ""
+      }
+    ];
   },
 };
