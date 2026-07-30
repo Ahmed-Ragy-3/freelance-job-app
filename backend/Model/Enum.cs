@@ -13,6 +13,14 @@
         Passed,
         Delayed
     }
+    public enum JobSortBy {
+        Newest,
+        Oldest,
+        HighestBudget,
+        MostApplicants,
+        ClosestDeadline
+    }
+
     public enum AppStatus {
         Draft,
         In_Progress,
@@ -20,5 +28,16 @@
         Rejected,
         Withdrawn,
         JobDone
+    }
+
+    public enum NotificationType {
+        ApplicationReceived,
+        ApplicationAccepted,
+        ApplicationRejected,
+        
+        JobApproved,
+        JobEdited,
+        JobCompleted,
+        ReviewReceived
     }
 }

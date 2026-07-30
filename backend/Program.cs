@@ -1,14 +1,16 @@
-using System.Text;
 using backend;
 using backend.Data;
 using backend.FileUpload;
 using backend.Options;
 using backend.Repositories;
 using backend.Services;
+using backend.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,18 @@ builder.Services.AddHostedService<JobDeadlineBackgroundService>();
 builder.Services.AddControllers();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://localhost:5173", "https://localhost:3000", "https://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -47,8 +61,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddScoped<IFileUploadService, CloudinaryService>();
-builder.Services.AddScoped<DatabaseSeeder>();
 
 builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -60,8 +72,6 @@ builder.Services.AddScoped<IFreelancerApplicationRepository, FreelancerApplicati
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 // ===== Auth setup =====
-builder.Services.AddScoped<JwtService>();
-
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
@@ -83,6 +93,24 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            // If the request is for our hub...
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/notificationHub"))
+            {
+                // Read the token out of the query string
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization(options =>
@@ -95,17 +123,17 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope()) {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+//using (var scope = app.Services.CreateScope()) {
+//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
 
-    if (app.Environment.IsDevelopment()) {
-        dbContext.Database.EnsureDeleted();
-    }
+//    if (app.Environment.IsDevelopment()) {
+//        dbContext.Database.EnsureDeleted();
+//    }
 
-    dbContext.Database.EnsureCreated();
-    await seeder.SeedAsync();
-}
+//    dbContext.Database.EnsureCreated();
+//    await seeder.SeedAsync();
+//}
 
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
@@ -114,13 +142,18 @@ if (app.Environment.IsDevelopment()) {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Freelance Job API v1");
     });
 }
+
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
 
@@ -132,6 +165,15 @@ static class DependencyInjection {
         services.AddScoped<IFreelancerService, FreelancerService>();
         services.AddScoped<HomeService>();
         services.AddScoped<JobService>();
+        services.AddScoped<NotificationService>();
+        services.AddScoped<JwtService>();
+
+        services.AddScoped<IFileUploadService, CloudinaryService>();
+        services.AddScoped<DatabaseSeeder>();
+        services.AddSignalR();
+        services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+        services.AddScoped<IFreelancerService, FreelancerService>();
         services.AddScoped<JobStatusService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IFreelancerDashboardService, FreelancerDashboardService>();

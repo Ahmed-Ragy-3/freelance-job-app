@@ -58,7 +58,7 @@ namespace backend.Repositories
         public async Task<int> GetUnreadNotificationsCountAsync(int userId)
         {
             return await _context.Notifications
-                .CountAsync(n => n.UserId == userId && !n.Read);
+                .CountAsync(n => n.UserId == userId && !n.IsRead);
         }
 
         public async Task<decimal> GetAverageRatingAsync(int freelancerId)
