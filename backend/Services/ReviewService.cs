@@ -1,5 +1,6 @@
 using backend.DTOs;
 using backend.Model;
+using backend.NotificationBuilders;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
@@ -7,10 +8,12 @@ namespace backend.Services
     public class ReviewService : IReviewService
     {
         private readonly AppDbContext _context;
+        private readonly NotificationService _notificationService;
 
-        public ReviewService(AppDbContext context)
+        public ReviewService(AppDbContext context, NotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<ReviewResponseDto> AddReviewAsync(int jobId, int reviewerId, CreateReviewDto dto)
@@ -77,6 +80,9 @@ namespace backend.Services
 
             var reviewerUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == reviewerId);
             var revieweeUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == revieweeId);
+
+            var notificationBuilder = new ReviewReceivedNotificationBuilder(revieweeId, reviewerUser?.UserName ?? string.Empty, job.Title);
+            await _notificationService.SendNotificationAsync(notificationBuilder);
 
             return new ReviewResponseDto
             {

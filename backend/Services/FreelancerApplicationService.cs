@@ -1,51 +1,47 @@
 using backend.DTOs;
 using backend.FileUpload;
 using backend.Model;
+using backend.NotificationBuilders;
 using backend.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Services
-{
-    public class FreelancerApplicationService : IFreelancerApplicationService
-    {
+namespace backend.Services {
+    public class FreelancerApplicationService : IFreelancerApplicationService {
         private readonly IFreelancerApplicationRepository _repository;
         private readonly IFileUploadService _fileUploadService;
         private readonly IFileValidationService _fileValidationService;
+        private readonly NotificationService _notificationService;
         private readonly AppDbContext _context;
 
         public FreelancerApplicationService(
             IFreelancerApplicationRepository repository,
             IFileUploadService fileUploadService,
             IFileValidationService fileValidationService,
-            AppDbContext context)
-        {
+            NotificationService notificationService,
+            AppDbContext context) {
+            _notificationService = notificationService;
             _repository = repository;
             _fileUploadService = fileUploadService;
             _fileValidationService = fileValidationService;
             _context = context;
         }
 
-        public async Task<ApplicationResponseDto> ApplyToJobAsync(int freelancerId, ApplyJobDto dto)
-        {
+        public async Task<ApplicationResponseDto> ApplyToJobAsync(int freelancerId, ApplyJobDto dto) {
             var job = await _repository.GetJobByIdAsync(dto.JobId);
-            if (job == null)
-            {
+            if (job == null) {
                 throw new KeyNotFoundException($"Job with ID {dto.JobId} was not found.");
             }
 
-            if (job.JobStatus != JobStatus.Approved)
-            {
+            if (job.JobStatus != JobStatus.Approved) {
                 throw new InvalidOperationException("This job is not currently open for applications.");
             }
 
             bool alreadyApplied = await _repository.HasAlreadyAppliedAsync(freelancerId, dto.JobId);
-            if (alreadyApplied)
-            {
+            if (alreadyApplied) {
                 throw new InvalidOperationException("You have already submitted an active application for this job.");
             }
 
-            var application = new Application
-            {
+            var application = new Application {
                 JobId = dto.JobId,
                 FreelancerId = freelancerId,
                 CoverLetter = dto.CoverLetter,
@@ -57,10 +53,8 @@ namespace backend.Services
             };
 
             // Process attachment uploads
-            if (dto.Attachments != null && dto.Attachments.Any())
-            {
-                foreach (var file in dto.Attachments)
-                {
+            if (dto.Attachments != null && dto.Attachments.Any()) {
+                foreach (var file in dto.Attachments) {
                     // 1. Validate file size and type (PDF / Images)
                     _fileValidationService.ValidateAttachment(file);
 
@@ -72,8 +66,7 @@ namespace backend.Services
                     string fileType = ext == ".pdf" ? "PDF" : "Image";
 
                     // 4. Attach entity
-                    application.Attachments.Add(new Attachment
-                    {
+                    application.Attachments.Add(new Attachment {
                         Url = uploadUrl,
                         FileName = file.FileName,
                         Type = fileType
@@ -84,8 +77,10 @@ namespace backend.Services
             var createdApp = await _repository.CreateApplicationAsync(application);
             var client = await _context.Clients.FirstOrDefaultAsync(c => c.UserId == job.ClientId);
 
-            return new ApplicationResponseDto
-            {
+            ApplicationReceivedNotificationBuilder notificationBuilder = new ApplicationReceivedNotificationBuilder(client.UserId, createdApp.Freelancer.User.UserName, job.Title);
+            await _notificationService.SendNotificationAsync(notificationBuilder);
+
+            return new ApplicationResponseDto {
                 JobId = createdApp.JobId,
                 JobTitle = job.Title,
                 JobBudget = job.Budget,
@@ -96,8 +91,7 @@ namespace backend.Services
                 Timeline = createdApp.Timeline,
                 AppStatus = createdApp.AppStatus,
                 JobDeadline = job.Deadline,
-                Attachments = createdApp.Attachments.Select(att => new AttachmentResponseDto
-                {
+                Attachments = createdApp.Attachments.Select(att => new AttachmentResponseDto {
                     Id = att.Id,
                     Url = att.Url,
                     FileName = att.FileName,
@@ -106,8 +100,7 @@ namespace backend.Services
             };
         }
 
-        public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int freelancerId)
-        {
+        public async Task<List<ApplicationResponseDto>> GetMyApplicationsAsync(int freelancerId) {
             var applications = await _repository.GetApplicationsByFreelancerIdAsync(freelancerId);
 
             var clientIds = applications.Select(a => a.Job.ClientId).Distinct().ToList();
@@ -115,12 +108,10 @@ namespace backend.Services
                 .Where(c => clientIds.Contains(c.UserId))
                 .ToDictionaryAsync(c => c.UserId);
 
-            return applications.Select(a =>
-            {
+            return applications.Select(a => {
                 clients.TryGetValue(a.Job.ClientId, out var client);
 
-                return new ApplicationResponseDto
-                {
+                return new ApplicationResponseDto {
                     JobId = a.JobId,
                     JobTitle = a.Job.Title,
                     JobBudget = a.Job.Budget,
@@ -130,8 +121,7 @@ namespace backend.Services
                     Bid = a.Bid,
                     Timeline = a.Timeline,
                     AppStatus = a.AppStatus,
-                    Attachments = a.Attachments.Select(att => new AttachmentResponseDto
-                    {
+                    Attachments = a.Attachments.Select(att => new AttachmentResponseDto {
                         Id = att.Id,
                         Url = att.Url,
                         FileName = att.FileName,
@@ -144,8 +134,7 @@ namespace backend.Services
 
 
 
-        public async Task<ApplicationResponseDto> SaveApplicationDraftAsync(int freelancerId, SaveApplicationDraftDto dto)
-        {
+        public async Task<ApplicationResponseDto> SaveApplicationDraftAsync(int freelancerId, SaveApplicationDraftDto dto) {
             var job = await _repository.GetJobByIdAsync(dto.JobId);
             if (job == null)
                 throw new KeyNotFoundException($"Job with ID {dto.JobId} was not found.");
@@ -154,10 +143,8 @@ namespace backend.Services
 
             var existing = await _repository.GetApplicationAsync(dto.JobId, freelancerId);
 
-            if (existing != null)
-            {
-                if (existing.AppStatus == AppStatus.Draft)
-                {
+            if (existing != null) {
+                if (existing.AppStatus == AppStatus.Draft) {
                     existing.CoverLetter = dto.CoverLetter;
                     existing.Bid = dto.Bid;
                     existing.Timeline = dto.Timeline;
@@ -176,8 +163,7 @@ namespace backend.Services
                 return await MapToResponseDtoAsync(existing, job);
             }
 
-            var draft = new Application
-            {
+            var draft = new Application {
                 JobId = dto.JobId,
                 FreelancerId = freelancerId,
                 CoverLetter = dto.CoverLetter,
@@ -192,8 +178,7 @@ namespace backend.Services
             return await MapToResponseDtoAsync(created, job);
         }
 
-        public async Task<ApplicationResponseDto> SubmitApplicationAsync(int freelancerId, int jobId, ApplyJobDto dto)
-        {
+        public async Task<ApplicationResponseDto> SubmitApplicationAsync(int freelancerId, int jobId, ApplyJobDto dto) {
             if (dto.JobId != jobId)
                 throw new ArgumentException("Job ID in the body must match the route.");
 
@@ -215,22 +200,18 @@ namespace backend.Services
             return await MapToResponseDtoAsync(application, application.Job);
         }
 
-        public async Task<bool> WithdrawApplicationAsync(int freelancerId, int jobId)
-        {
+        public async Task<bool> WithdrawApplicationAsync(int freelancerId, int jobId) {
             var application = await _repository.GetApplicationAsync(jobId, freelancerId);
-            if (application == null)
-            {
+            if (application == null) {
                 throw new KeyNotFoundException($"Job with ID {jobId} was not found.");
             }
 
-            if (application.FreelancerId != freelancerId)
-            {
+            if (application.FreelancerId != freelancerId) {
                 throw new UnauthorizedAccessException("You are not authorized to withdraw this application.");
             }
 
             // Only applications pending review (In_Progress) can be withdrawn
-            if (application.AppStatus is not (AppStatus.In_Progress or AppStatus.Draft))
-            {
+            if (application.AppStatus is not (AppStatus.In_Progress or AppStatus.Draft)) {
                 throw new InvalidOperationException($"Cannot withdraw application with status '{application.AppStatus}'. Only draft or pending applications can be withdrawn.");
             }
 
@@ -240,8 +221,7 @@ namespace backend.Services
             return true;
         }
 
-        public async Task<ApplicationResponseDto> SubmitJobAsync(int freelancerId, int jobId)
-        {
+        public async Task<ApplicationResponseDto> SubmitJobAsync(int freelancerId, int jobId) {
             var application = await _repository.GetApplicationAsync(jobId, freelancerId);
             if (application == null)
                 throw new KeyNotFoundException($"Application for Job ID {jobId} was not found.");
@@ -259,8 +239,7 @@ namespace backend.Services
             return await MapToResponseDtoAsync(application, application.Job);
         }
 
-        private static void EnsureJobOpenForApplications(Job job)
-        {
+        private static void EnsureJobOpenForApplications(Job job) {
             if (job.JobStatus != JobStatus.Approved)
                 throw new InvalidOperationException("This job is not currently open for applications.");
 
@@ -268,12 +247,10 @@ namespace backend.Services
                 throw new InvalidOperationException("This job is no longer accepting applications because the deadline has passed.");
         }
 
-        private async Task<ApplicationResponseDto> MapToResponseDtoAsync(Application application, Job job)
-        {
+        private async Task<ApplicationResponseDto> MapToResponseDtoAsync(Application application, Job job) {
             var client = await _context.Clients.FirstOrDefaultAsync(c => c.UserId == job.ClientId);
 
-            return new ApplicationResponseDto
-            {
+            return new ApplicationResponseDto {
                 JobId = application.JobId,
                 JobTitle = job.Title,
                 JobBudget = job.Budget,

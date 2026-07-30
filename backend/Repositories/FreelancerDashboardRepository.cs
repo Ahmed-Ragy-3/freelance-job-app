@@ -66,8 +66,8 @@ namespace backend.Repositories
             var ratings = await _context.Applications
                 .Where(a => a.FreelancerId == freelancerId
                          && a.AppStatus == AppStatus.JobDone
-                         && a.Job.Review != null)
-                .Select(a => (decimal?)a.Job.Review!.Rate)
+                         && a.Job.Reviews != null)
+                .Select(a => (decimal?)a.Job.Reviews.First().Rate)
                 .ToListAsync();
 
             if (!ratings.Any() || ratings.All(r => r == null))

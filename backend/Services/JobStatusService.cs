@@ -1,9 +1,10 @@
 using backend.Model;
+using backend.NotificationBuilders;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
-    public class JobStatusService(AppDbContext context)
+    public class JobStatusService(AppDbContext context, NotificationService notificationService)
     {
         public async Task<Job> GetJobOrThrowAsync(int jobId)
         {
@@ -26,6 +27,9 @@ namespace backend.Services
 
             job.JobStatus = JobStatus.Approved;
             await context.SaveChangesAsync();
+
+            var notificationBuilder = new JobApprovedNotificationBuilder(job.ClientId, job.Title);
+            await notificationService.SendNotificationAsync(notificationBuilder);
         }
 
         public async Task RejectJobAsync(int jobId)
@@ -63,13 +67,19 @@ namespace backend.Services
 
             application.AppStatus = AppStatus.Accepted;
 
-            foreach (var other in job.Applications.Where(a => a.FreelancerId != freelancerId && a.AppStatus == AppStatus.In_Progress))
+            foreach (var other in job.Applications.Where(a => a.FreelancerId != freelancerId && a.AppStatus == AppStatus.In_Progress)) {
                 other.AppStatus = AppStatus.Rejected;
+                var notificationBuilder1 = new ApplicationRejectedNotificationBuilder(freelancerId, job.Title);
+                await notificationService.SendNotificationAsync(notificationBuilder1);
+            }
 
             job.JobStatus = JobStatus.In_Progress;
             job.AcceptedAt = DateTime.UtcNow;
 
             await context.SaveChangesAsync();
+
+            var notificationBuilder2 = new ApplicationAcceptedNotificationBuilder(freelancerId, job.Title);
+            await notificationService.SendNotificationAsync(notificationBuilder2);   
         }
 
         public async Task FinishJobAsync(int jobId, int clientId)
