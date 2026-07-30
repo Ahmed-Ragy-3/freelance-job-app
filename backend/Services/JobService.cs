@@ -1,9 +1,10 @@
 ﻿using backend.DTOs;
 using backend.Model;
+using backend.NotificationBuilders;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services {
-    public class JobService(AppDbContext appDbContext) {
+    public class JobService(AppDbContext appDbContext, NotificationService notificationService) {
         public async Task<List<JobSummaryDto>> GetTopNJobsAsync(int n) {
             var jobs = await appDbContext.Jobs
                 .OrderByDescending(j => j.PostedAt)
@@ -187,6 +188,9 @@ namespace backend.Services {
                 job.Tags.Add(new JobTag { TagId = tagId });
 
             await appDbContext.SaveChangesAsync();
+            
+            JobEditedNotificationBuilder jenb = new JobEditedNotificationBuilder(clientId, job.Title);
+            await notificationService.SendNotificationAsync(jenb);
         }
 
         public async Task DeleteJobAsync(int jobId, int clientId) {

@@ -30,11 +30,12 @@
     }
 
     public enum NotificationType {
-        ProposalReceived,
-        ProposalAccepted,
-        ProposalRejected,
+        ApplicationReceived,
+        ApplicationAccepted,
+        ApplicationRejected,
         
-        JobAssigned,
+        JobApproved,
+        JobEdited,
         JobCompleted,
         ReviewReceived
     }

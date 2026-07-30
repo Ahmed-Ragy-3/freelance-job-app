@@ -8,6 +8,7 @@ using backend.Auth;
 namespace backend.Controllers {
     [ApiController]
     [Route("api/jobs")]
+    [Authorize]
     public class JobController(JobService jobService) : ControllerBase {
 
         private int GetUserId() {
