@@ -284,9 +284,9 @@ The reports section provides visual analytics for activity, revenue, and job cre
 
 This project was developed as a final academic submission by:
 
-- **Ragy**
-- **Alaa**
-- **Omar**
+- **Ahmed Alaa**
+- **Omar Waleed**
+- **Ahmed Ragy**
 
 ### Acknowledgments
 
